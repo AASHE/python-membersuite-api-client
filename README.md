@@ -1,5 +1,5 @@
 # python-membersuite-api-client
-A python interface to the MemberSuite API
+A python interface to the [MemberSuite API](http://api.docs.membersuite.com/)
 
 ## Membersuite Official Libraries
 
