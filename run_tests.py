@@ -35,6 +35,8 @@ def main():
         'django.contrib.staticfiles',
         'django.contrib.sites',
 
+        'pysimplesoap',
+
         # AASHE Apps
         'membersuite-api-client'
     )
