@@ -1,0 +1,12 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:sch="http://membersuite.com/schemas" xmlns:con="http://membersuite.com/contracts" >
+    <soapenv:Header>
+        <sch:ConciergeRequestHeader>
+            <sch:AccessKeyId>$access_key</sch:AccessKeyId>
+            <sch:AssociationId>$association_id</sch:AssociationId>
+            <sch:Signature>$hashed_signature</sch:Signature>
+        </sch:ConciergeRequestHeader>
+    </soapenv:Header>
+    <soapenv:Body>
+        $body
+    </soapenv:Body>
+</soapenv:Envelope>

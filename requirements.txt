@@ -1,1 +1,1 @@
-PySimpleSOAP==1.08.9
+requests==2.11.1
