@@ -12,7 +12,7 @@ from suds.xsd.doctor import Import, ImportDoctor
 
 
 _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
-_MS_SECRET_KEY = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='
+_MS_SECRET_KEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
 _MS_ASSOCIATION_ID = '00000000-0000-0000-0000-000000000000'
 
 
@@ -33,8 +33,7 @@ class ConciergeClient:
         self.secret_key = _MS_SECRET_KEY
         self.association_id = _MS_ASSOCIATION_ID
 
-        self.initial_request_url = 'http://membersuite.com/contracts/IConciergeAPIService/WhoAmI00000000-0000-0000-0000-00000000000011111111-1111-1111-1111-111111111111'
-
+        self.initial_request_url = "http://membersuite.com/contracts/IConciergeAPIService/WhoAmI00000000-0000-0000-0000-00000000000011111111-1111-1111-1111-111111111111"
         self.hashed_signature = self.get_hashed_signature()
         self.session_id = self.request_session()
         self.session_start_time = datetime.now()
@@ -42,13 +41,12 @@ class ConciergeClient:
     def get_hashed_signature(self):
         signature = bytearray(self.initial_request_url)
         print "SIGNATURE: ", type(signature), signature
-        print "SECRET KEY BEFORE: ", type(self.secret_key)
         secret_key = bytearray(self.secret_key)
-        print "SECRET KEY: ", secret_key
+        print "SECRET KEY: ", type(secret_key), secret_key
         hashed_signature = hmac.new(secret_key,
                                     msg=signature,
                                     digestmod=hashlib.sha1).digest()
-        hashed_signature = bytearray(base64.b64encode(hashed_signature))
+        hashed_signature = base64.b64encode(hashed_signature)
         print hashed_signature
         return hashed_signature
 
@@ -75,7 +73,7 @@ class ConciergeClient:
         }
         request = soap_initial_request.substitute(data)
 
-        response = requests.post(self.initial_request_url,
+        response = requests.get(self.initial_request_url,
                                  data=request,
                                  headers=headers)
         return None
