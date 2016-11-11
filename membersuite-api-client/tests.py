@@ -10,3 +10,4 @@ class ConciergeClientTestCase(TestCase):
         """
         test_client = ConciergeClient()
         self.assertTrue(test_client)
+        self.assertEqual(test_client.hashed_signature, "2zsMYdHb/MJUeTjv5cQl5pBuIqU=")

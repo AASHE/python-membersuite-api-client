@@ -1,14 +1,36 @@
 import os
 import hmac
-import hashlib
+from hashlib import sha1
 import base64
 import requests
 from string import Template
 from datetime import datetime
-from pysimplesoap.client import SoapClient
-from pysimplesoap.simplexml import SimpleXMLElement
-from suds.client import Client
-from suds.xsd.doctor import Import, ImportDoctor
+from zeep import Client, xsd
+
+import logging.config
+
+logging.config.dictConfig({
+    'version': 1,
+    'formatters': {
+        'verbose': {
+            'format': '%(name)s: %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'zeep.transports': {
+            'level': 'DEBUG',
+            'propagate': True,
+            'handlers': ['console'],
+        },
+    }
+})
 
 
 _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
@@ -33,22 +55,26 @@ class ConciergeClient:
         self.secret_key = _MS_SECRET_KEY
         self.association_id = _MS_ASSOCIATION_ID
 
-        self.initial_request_url = "http://membersuite.com/contracts/IConciergeAPIService/WhoAmI00000000-0000-0000-0000-00000000000011111111-1111-1111-1111-111111111111"
+        self.url = "http://membersuite.com/contracts/IConciergeAPIService/WhoAmI"
+        self.session_id = "11111111-1111-1111-1111-111111111111"
         self.hashed_signature = self.get_hashed_signature()
         self.session_id = self.request_session()
         self.session_start_time = datetime.now()
 
     def get_hashed_signature(self):
-        signature = bytearray(self.initial_request_url)
-        print "SIGNATURE: ", type(signature), signature
-        secret_key = bytearray(self.secret_key)
-        print "SECRET KEY: ", type(secret_key), secret_key
-        hashed_signature = hmac.new(secret_key,
-                                    msg=signature,
-                                    digestmod=hashlib.sha1).digest()
-        hashed_signature = base64.b64encode(hashed_signature)
-        print hashed_signature
-        return hashed_signature
+        """
+        Process from Membersuite Docs: http://bit.ly/2eSIDxz
+        """
+
+        data = "%s%s" % (self.url, self.association_id)
+        if self.session_id:
+            data = "%s%s" % (data, self.session_id)
+
+        data_b = bytearray(data, 'utf-8')
+        secret_b = bytearray(self.secret_key, 'utf-8')
+
+        hashed = hmac.new(secret_b, data_b, sha1)
+        return hashed.digest().encode("base64").rstrip('\n')
 
     def request_session(self):
         """
@@ -59,23 +85,8 @@ class ConciergeClient:
 
         body = '<con:WhoAmI/>'
 
-        infile = os.path.join(os.path.dirname(__file__),
-                            'templates/initial_request.txt')
-        template = open(infile)
-        soap_initial_request = Template(template.read())
+        # client = Client('http://soap.membersuite.com/mex')
 
-        headers = {'content-type': 'text/xml'}
-        data = {
-            'access_key': self.access_key,
-            'association_id': self.association_id,
-            'hashed_signature': self.hashed_signature,
-            'body': body,
-        }
-        request = soap_initial_request.substitute(data)
-
-        response = requests.get(self.initial_request_url,
-                                 data=request,
-                                 headers=headers)
         return None
 
 
