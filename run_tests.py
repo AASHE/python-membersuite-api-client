@@ -10,7 +10,6 @@ def main():
     You can play with a django model without a complete django app installation.
     http://www.djangosnippets.org/snippets/1044/
     """
-    sys.exc_clear()
 
     os.environ["DJANGO_SETTINGS_MODULE"] = "django.conf.global_settings"
     from django.conf import global_settings
@@ -35,10 +34,8 @@ def main():
         'django.contrib.staticfiles',
         'django.contrib.sites',
 
-        'pysimplesoap',
-
         # AASHE Apps
-        'membersuite-api-client'
+        'membersuite-api-client.client'
     )
 
     if django.VERSION > (1, 2):

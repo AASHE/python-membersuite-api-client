@@ -2,8 +2,6 @@ import os
 import hmac
 from hashlib import sha1
 import base64
-import requests
-from string import Template
 from datetime import datetime
 from zeep import Client, xsd
 
@@ -65,16 +63,15 @@ class ConciergeClient:
         """
         Process from Membersuite Docs: http://bit.ly/2eSIDxz
         """
-
         data = "%s%s" % (self.url, self.association_id)
         if self.session_id:
             data = "%s%s" % (data, self.session_id)
-
         data_b = bytearray(data, 'utf-8')
-        secret_b = bytearray(self.secret_key, 'utf-8')
+        secret_key = base64.b64decode(self.secret_key)
+        secret_b = bytearray(secret_key)
 
-        hashed = hmac.new(secret_b, data_b, sha1)
-        return hashed.digest().encode("base64").rstrip('\n')
+        hashed = hmac.new(secret_b, data_b, sha1).digest()
+        return base64.b64encode(hashed).decode("utf-8")
 
     def request_session(self):
         """
@@ -84,8 +81,8 @@ class ConciergeClient:
         """
 
         body = '<con:WhoAmI/>'
-
-        # client = Client('http://soap.membersuite.com/mex')
+        client = Client('https://soap.membersuite.com/mex')
+        client.service.WhoAmI()
 
         return None
 

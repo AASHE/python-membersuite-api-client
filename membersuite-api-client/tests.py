@@ -1,5 +1,5 @@
 from django.test import Client, TestCase
-from client import ConciergeClient
+from .client import ConciergeClient
 
 
 class ConciergeClientTestCase(TestCase):
