@@ -32,8 +32,8 @@ logging.config.dictConfig({
 
 
 _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
-_MS_SECRET_KEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
-_MS_ASSOCIATION_ID = '00000000-0000-0000-0000-000000000000'
+_MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
+_MS_ASSOCIATION_ID = os.environ.get('MS_ASSOCIATION_ID', None)
 
 
 class ConciergeClient:
@@ -53,8 +53,8 @@ class ConciergeClient:
         self.secret_key = _MS_SECRET_KEY
         self.association_id = _MS_ASSOCIATION_ID
 
-        self.url = "http://membersuite.com/contracts/IConciergeAPIService/WhoAmI"
-        self.session_id = "11111111-1111-1111-1111-111111111111"
+        self.url = "http://soap.membersuite.com"
+        self.session_id = None
         self.hashed_signature = self.get_hashed_signature()
         self.session_id = self.request_session()
         self.session_start_time = datetime.now()
