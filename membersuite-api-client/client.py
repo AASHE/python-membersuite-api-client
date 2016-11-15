@@ -4,6 +4,8 @@ from hashlib import sha1
 import base64
 from datetime import datetime
 from zeep import Client, xsd
+from collections import OrderedDict
+from lxml import etree
 
 import logging.config
 
@@ -83,10 +85,17 @@ class ConciergeClient:
         :return: Session ID to be placed in header of all other requests.
         """
         client = Client('https://soap.membersuite.com/mex')
-        concierge_header = client.get_type('ns26:ConciergeRequestHeader')
-        concierge_data = concierge_header(AccessKeyId=_MS_ACCESS_KEY,
-                                          AssociationId=_MS_ASSOCIATION_ID,
-                                          Signature=self.hashed_signature)
+        # concierge_header = client.get_type('ns26:ConciergeRequestHeader')
+        # concierge_data = concierge_header(AccessKeyId=_MS_ACCESS_KEY,
+        #                                   AssociationId=_MS_ASSOCIATION_ID,
+        #                                   Signature=self.hashed_signature)
+        concierge_data = etree.Element("ConciergeRequestHeader")
+        access_key = etree.SubElement(concierge_data, "AccessKeyId")
+        association_id = etree.SubElement(concierge_data, "AssociationId")
+        signature = etree.SubElement(concierge_data, "Signature")
+        access_key.set("AccessKeyId", _MS_ACCESS_KEY)
+        association_id.set("AssociationId", _MS_ASSOCIATION_ID)
+        signature.set("Signature", self.hashed_signature)
         client.service.WhoAmI(_soapheaders=[concierge_data])
 
         return None
