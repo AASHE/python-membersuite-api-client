@@ -62,6 +62,9 @@ class ConciergeClient:
     def get_hashed_signature(self):
         """
         Process from Membersuite Docs: http://bit.ly/2eSIDxz
+
+        Usage: Modify self.url attribute of class
+               before calling method, if necessary
         """
         data = "%s%s" % (self.url, self.association_id)
         if self.session_id:
@@ -79,13 +82,14 @@ class ConciergeClient:
         necessary to construct all future requests.
         :return: Session ID to be placed in header of all other requests.
         """
-
-        body = '<con:WhoAmI/>'
         client = Client('https://soap.membersuite.com/mex')
-        client.service.WhoAmI()
+        concierge_header = client.get_type('ns26:ConciergeRequestHeader')
+        concierge_data = concierge_header(AccessKeyId=_MS_ACCESS_KEY,
+                                          AssociationId=_MS_ASSOCIATION_ID,
+                                          Signature=self.hashed_signature)
+        client.service.WhoAmI(_soapheaders=[concierge_data])
 
         return None
-
 
     def _get(self, params, request_body):
         """
