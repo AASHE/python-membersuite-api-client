@@ -36,6 +36,8 @@ logging.config.dictConfig({
 _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
 _MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
 _MS_ASSOCIATION_ID = os.environ.get('MS_ASSOCIATION_ID', None)
+_MS_PORTAL_USER_ID = os.environ.get('MS_PORTAL_USER_ID', None)
+_MS_PORTAL_USER_PASS = os.environ.get('MS_PORTAL_USER_PASS', None)
 
 
 class ConciergeClient:
@@ -89,14 +91,17 @@ class ConciergeClient:
         # concierge_data = concierge_header(AccessKeyId=_MS_ACCESS_KEY,
         #                                   AssociationId=_MS_ASSOCIATION_ID,
         #                                   Signature=self.hashed_signature)
+        etree.register_namespace('xsc', 'xsc')
         concierge_data = etree.Element("ConciergeRequestHeader")
         access_key = etree.SubElement(concierge_data, "AccessKeyId")
         association_id = etree.SubElement(concierge_data, "AssociationId")
         signature = etree.SubElement(concierge_data, "Signature")
-        access_key.set("AccessKeyId", _MS_ACCESS_KEY)
-        association_id.set("AssociationId", _MS_ASSOCIATION_ID)
-        signature.set("Signature", self.hashed_signature)
-        client.service.WhoAmI(_soapheaders=[concierge_data])
+        access_key.text = _MS_ACCESS_KEY
+        association_id.text = _MS_ASSOCIATION_ID
+        signature.text = self.hashed_signature
+        client.service.LoginToPortal(portalUserName=_MS_PORTAL_USER_ID,
+                                     portalPassword=_MS_PORTAL_USER_PASS,
+                                     _soapheaders=[concierge_data])
 
         return None
 
