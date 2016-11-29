@@ -36,9 +36,9 @@ _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
 _MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
 _MS_ASSOCIATION_ID = os.environ.get('MS_ASSOCIATION_ID', None)
 _MS_PORTAL_USER_ID = os.environ.get('MS_PORTAL_USER_ID', None)
-_MS_PORTAL_USER_PASS = os.environ.get('MS_PORTAL_USER_PASS', None)
+_MS_PORTAL_USER_PASS = os.environ.get('MS_PORTAL_PASSWORD', None)
 
-XHTML_NAMESPACE = "http://www.w3.org/2001/XMLSchema"
+XHTML_NAMESPACE = "http://membersuite.com/schemas"
 
 
 class ConciergeClient:
@@ -58,7 +58,7 @@ class ConciergeClient:
         self.secret_key = _MS_SECRET_KEY
         self.association_id = _MS_ASSOCIATION_ID
 
-        self.url = "http://soap.membersuite.com"
+        self.url = "http://membersuite.com/contracts/IConciergeAPIService/LoginToPortal"
         self.session_id = None
         self.hashed_signature = self.get_hashed_signature()
         self.session_id = self.request_session()
@@ -88,72 +88,30 @@ class ConciergeClient:
         :return: Session ID to be placed in header of all other requests.
         """
         client = Client('https://soap.membersuite.com/mex')
-        concierge_message_header = \
-            etree.Element(etree.QName(XHTML_NAMESPACE, "complexType"),
-                          name="ConciergeMessageHeader")
-
-        message_header_sequence = \
-            etree.SubElement(concierge_message_header,
-                             etree.QName(XHTML_NAMESPACE, "sequence"))
-
-        message_sequence_element = \
-            etree.SubElement(message_header_sequence,
-                             etree.QName(XHTML_NAMESPACE, "element"),
-                             name="SessionId",
-                             type="xs:string",
-                             minOccurs="0",
-                             maxOccurs="1")
 
         concierge_request_header = \
-            etree.Element(etree.QName(XHTML_NAMESPACE, "complexType"),
-                          name="ConciergeRequestHeader")
-
-        concierge_content = \
-            etree.SubElement(concierge_request_header,
-                             etree.QName(XHTML_NAMESPACE, "complexContent"))
-
-        extension = \
-            etree.SubElement(concierge_content,
-                             etree.QName(XHTML_NAMESPACE, "extension"),
-                             base="ConciergeMessageHeader")
-
-        extension_sequence = \
-            etree.SubElement(extension,
-                             etree.QName(XHTML_NAMESPACE, "sequence"),
-                             )
+            etree.Element(etree.QName(XHTML_NAMESPACE, "ConciergeRequestHeader"),
+                          nsmap={'sch': XHTML_NAMESPACE})
 
         access_key = \
-            etree.SubElement(extension_sequence,
-                             etree.QName(XHTML_NAMESPACE, "element"),
-                             name="AccessKeyId",
-                             type="xs:string",
-                             minOccurs="1",
-                             maxOccurs="1")
+            etree.SubElement(concierge_request_header,
+                             etree.QName(XHTML_NAMESPACE, "AccessKeyId"))
 
         association_id = \
-            etree.SubElement(extension_sequence,
-                             etree.QName(XHTML_NAMESPACE, "element"),
-                             name="AssociationId",
-                             type="xs:string",
-                             minOccurs="1",
-                             maxOccurs="1")
+            etree.SubElement(concierge_request_header,
+                             etree.QName(XHTML_NAMESPACE, "AssociationId"))
 
         signature = \
-            etree.SubElement(extension_sequence,
-                             etree.QName(XHTML_NAMESPACE, "element"),
-                             name="Signature",
-                             type="xs:string",
-                             minOccurs="1",
-                             maxOccurs="1")
+            etree.SubElement(concierge_request_header,
+                             etree.QName(XHTML_NAMESPACE, "Signature"))
 
         access_key.text = _MS_ACCESS_KEY
         association_id.text = _MS_ASSOCIATION_ID
-        signature = self.hashed_signature
+        signature.text = self.hashed_signature
 
         client.service.LoginToPortal(portalUserName=_MS_PORTAL_USER_ID,
                                      portalPassword=_MS_PORTAL_USER_PASS,
-                                     _soapheaders=[concierge_message_header,
-                                                   concierge_request_header])
+                                     _soapheaders=[concierge_request_header])
 
         return None
 
