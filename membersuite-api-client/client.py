@@ -8,35 +8,35 @@ from lxml import etree
 
 import logging.config
 
-logging.config.dictConfig({
-    'version': 1,
-    'formatters': {
-        'verbose': {
-            'format': '%(name)s: %(message)s'
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'zeep.transports': {
-            'level': 'DEBUG',
-            'propagate': True,
-            'handlers': ['console'],
-        },
-    }
-})
+# logging.config.dictConfig({
+#     'version': 1,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(name)s: %(message)s'
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'zeep.transports': {
+#             'level': 'DEBUG',
+#             'propagate': True,
+#             'handlers': ['console'],
+#         },
+#     }
+# })
 
 
 _MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
 _MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
 _MS_ASSOCIATION_ID = os.environ.get('MS_ASSOCIATION_ID', None)
-_MS_PORTAL_USER_ID = os.environ.get('MS_PORTAL_USER_ID', None)
-_MS_PORTAL_USER_PASS = os.environ.get('MS_PORTAL_PASSWORD', None)
+_MS_USER_ID = os.environ.get('MS_USER_ID', None)
+_MS_USER_PASS = os.environ.get('MS_USER_PASS', None)
 
 XHTML_NAMESPACE = "http://membersuite.com/schemas"
 
@@ -58,7 +58,7 @@ class ConciergeClient:
         self.secret_key = _MS_SECRET_KEY
         self.association_id = _MS_ASSOCIATION_ID
 
-        self.url = "http://membersuite.com/contracts/IConciergeAPIService/LoginToPortal"
+        self.url = "http://membersuite.com/contracts/IConciergeAPIService/Login"
         self.session_id = None
         self.hashed_signature = self.get_hashed_signature()
         self.session_id = self.request_session()
@@ -109,11 +109,12 @@ class ConciergeClient:
         association_id.text = _MS_ASSOCIATION_ID
         signature.text = self.hashed_signature
 
-        client.service.LoginToPortal(portalUserName=_MS_PORTAL_USER_ID,
-                                     portalPassword=_MS_PORTAL_USER_PASS,
-                                     _soapheaders=[concierge_request_header])
+        result = client.service.Login(_soapheaders=[concierge_request_header],
+                             userName=_MS_USER_ID,
+                             password=_MS_USER_PASS,
+                             loginDestination=_MS_ASSOCIATION_ID)
 
-        return None
+        return result['header']['header']['SessionId']
 
     def _get(self, params, request_body):
         """
