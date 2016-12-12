@@ -1,2 +1,4 @@
 zeep==0.22.0
 lxml==3.6.4
+coverage==4.2
+coveralls==1.1
