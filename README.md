@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AASHE/python-membersuite-api-client.svg?branch=master)](https://travis-ci.org/AASHE/python-membersuite-api-client) [![Coverage Status](https://coveralls.io/repos/github/AASHE/python-membersuite-api-client/badge.svg?branch=master)](https://coveralls.io/github/AASHE/python-membersuite-api-client?branch=master) [![Issue Count](https://codeclimate.com/github/AASHE/python-membersuite-api-client/badges/issue_count.svg)](https://codeclimate.com/github/AASHE/python-membersuite-api-client) [![Requirements Status](https://requires.io/github/AASHE/python-membersuite-api-client/requirements.svg?branch=master)](https://requires.io/github/AASHE/python-membersuite-api-client/requirements/?branch=master)
+
 # python-membersuite-api-client
 A python interface to the MemberSuite API
 
@@ -46,9 +48,8 @@ Use request_session() as a model for constructing the headers for
 your own functions in your app that follow this method:
 
     1) Alter client.url. Use the full URL for the SOAP action you are taking.
-    2) Call client.get_hashed_signature() to generate a new signature using this url.
-    3) Construct the concierge request header similar to the request_session() method.
-    4) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
-    5) Return any relevant data out of the response object
+    2) Call client.construct_concierge_header() to generate a new header element.
+    3) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
+    4) Return any relevant data out of the response object
 
 ***IMPORTANT NOTE: In constructing headers, SessionId must appear first.***
