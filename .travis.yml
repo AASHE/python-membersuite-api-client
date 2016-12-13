@@ -1,6 +1,6 @@
 language: python
 python:
-- 3.4.3
+- "3.4"
 env:
   global:
   - secure: SSXsS/Umr9gWbglzaU7f8bXcRL7QwPvIyHpP/eem0hhQ/1sg4+GPuYbiLzeUOad3WoVU5+gSRuZVvORvM0WVhD5HRxtu5hvR/eq5yfr6OtokZj+J/CUDmDcS0975JMLdioqQiz4LZBcMbpKcQ2PNlvmIMeIYMx3VimFoi0T0O9E0K+yybz5cjYiPIuO9lJuKP3pJAL3x/fGxIf8DfgrRffYqk76xDJwOSbefdYZ26/f/AkZsnZ//JNLMIOkfRDpvO1Q6BVMB3VpDem11K0RkMlxBL8WZZU15aobUDQRGowA1zRxn/1fJoLdi9X4mBOtO1r2KgoX73/TrX3ZaofTjRxXreqqQpYRWA9vGji407Gb/Zju4zEcQwXrbc5iVdrGHd71i+nDpRMHbOXDM9SuEnOB+stfxmCiwVhHmTRgr/QyaIbuOVW/PY2otvqJlGdiGM6BwfX0sRLq+PHexR8VsGk/yFRO2dnYXua77s44A8NLlOQ5ErFusM7FH/wKJ6nSzPQZ/llWMumwPnsvVn6N3E8mZjjEf7rZu2mothXXAoYM2xuni3U1zVKiPN10oOhAWt6N5aMTp29Gz+K6Zk3ldTjlGnuiY5G+MpX20WKu3Hs2RN4Ytltcm8vlk7nHiVaURLDcXz7uAPW7bhn6fVmHEE0klC/Mat4+Muk6/IDk5S/8=
@@ -10,7 +10,8 @@ env:
   - secure: QecBsEz35zjnn9U6/Ik43hhNM45TXIQ/iNKXByJ4wEnpEEVcsrtQvaz0a3dL8SVFRdugeMy1owodUAf7QQwTbJVbaQM3SBodn7vu0UYUdFsElsgzlvDNuU+BkNyCDZVo65Fj+Q5nFwgaUGmunOpVE8eOgzOigsTxaeDQyjlB4gFxT1KxON6NsNsauaeOAk1mDYsNy4F+cn8rQUubKQFHAdJ0Nq+dhYk9j3ELoNAygkyAPG/skBvuxgiKRF/UpSRBcut8VsbvnV1fYkmwUwZvnk2EyF2kldu5nGIpPMy8Ig7MRcbVCbsH4xJffmRkKiBtHQznFW7+ovPvsc5u4I+DchkK5yQAFKdoqGzfn7roAm++uTUmD5XarpHcKQuYuezz6mNfz6CTkoJBY4xbq7eS+A4oWe7ef4IQZ+QIv8/OtyxBb+fFSgG8tkNVbxIFU/lSRmZe5HpmONiUMk4I/CTidpZPtkp8+yIE6JAFLLxaXBhBRIHhioPKOkYGxTho0HZUvYS0hH8/M9KbpN4CyWEqquF0IG1Ed8HP9xv1k6oiPl5ENjnmX1Ly+3q0uPOdLjBq2GXVtGPdUnfLYSVoxRtdXrARdRSGuE2pzDJ5zw4yhAfi75aGYR/PcsJcI6zkE42l+lT/EWvtz+CN0QeGSmorrt6Zi2t2U2sQrGdhShRxorQ=
 install:
 - pip install -r requirements.txt
-script: coverage run membersuite-api-client/tests.py
+script:
+  coverage run membersuite-api-client/tests.py
 after_success: coveralls
 notifications:
   hipchat: 5534a6204d6caa1a45ac2444282aca@WebDevActivity
