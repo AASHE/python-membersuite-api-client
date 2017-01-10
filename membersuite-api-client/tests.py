@@ -4,11 +4,11 @@ import unittest
 from client import ConciergeClient
 
 
-TEST_USERNAME = os.environ["TEST_USERNAME"]
-TEST_PASSWORD = os.environ["TEST_PASSWORD"]
-TEST_ACCESS_KEY = os.environ["TEST_ACCESS_KEY"]
-TEST_SECRET_KEY = os.environ["TEST_SECRET_KEY"]
-TEST_ASSOCIATION_ID = os.environ["TEST_ASSOCIATION_ID"]
+MS_USER_ID = os.environ["MS_USER_ID"]
+MS_USER_PASS = os.environ["MS_USER_PASS"]
+MS_ACCESS_KEY = os.environ["MS_ACCESS_KEY"]
+MS_SECRET_KEY = os.environ["MS_SECRET_KEY"]
+MS_ASSOCIATION_ID = os.environ["MS_ASSOCIATION_ID"]
 
 
 class ConciergeClientTestCase(unittest.TestCase):
@@ -18,9 +18,9 @@ class ConciergeClientTestCase(unittest.TestCase):
         Tests that we are properly hashing the signature data
         """
         client = ConciergeClient(
-            username=TEST_USERNAME,
-            password=TEST_PASSWORD,
-            access_key=TEST_ACCESS_KEY,
+            username=MS_USER_ID,
+            password=MS_USER_PASS,
+            access_key=MS_ACCESS_KEY,
             secret_key=("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="),
             association_id="00000000-0000-0000-0000-000000000000")
@@ -36,11 +36,11 @@ class ConciergeClientTestCase(unittest.TestCase):
         """
         Can we send a login request and receive a session ID?
         """
-        client = ConciergeClient(username=TEST_USERNAME,
-                                 password=TEST_PASSWORD,
-                                 access_key=TEST_ACCESS_KEY,
-                                 secret_key=TEST_SECRET_KEY,
-                                 association_id=TEST_ASSOCIATION_ID)
+        client = ConciergeClient(username=MS_USER_ID,
+                                 password=MS_USER_PASS,
+                                 access_key=MS_ACCESS_KEY,
+                                 secret_key=MS_SECRET_KEY,
+                                 association_id=MS_ASSOCIATION_ID)
 
         # Send a login request to receive a session id
         session_id = client.request_session()
