@@ -1,17 +1,10 @@
-from datetime import datetime
 from hashlib import sha1
 from lxml import etree
 from zeep import Client
 import base64
 import hmac
-import os
 
 XHTML_NAMESPACE = "http://membersuite.com/schemas"
-
-
-class LoginToPortalError(Exception):
-
-    pass
 
 
 class MembersuiteLoginError(Exception):
@@ -35,7 +28,6 @@ class ConciergeClient(object):
         self.session_id = None
         self.client = Client('https://soap.membersuite.com/mex')
 
-
     def get_hashed_signature(self, url):
         """
         Process from Membersuite Docs: http://bit.ly/2eSIDxz
@@ -50,6 +42,12 @@ class ConciergeClient(object):
         hashed = hmac.new(secret_b, data_b, sha1).digest()
         return base64.b64encode(hashed).decode("utf-8")
 
+    def get_session_id_from_login_result(self, login_result):
+        try:
+            return login_result["header"]["header"]["SessionId"]
+        except TypeError:
+            return None
+
     def request_session(self):
         """
         Performs initial request to initialize session and get session id
@@ -63,13 +61,14 @@ class ConciergeClient(object):
             _soapheaders=[concierge_request_header],
             userName=self.username,
             password=self.password,
-            loginDestination=self.association_id,
-        )
+            loginDestination=self.association_id)
 
-        try:
-            self.session_id = result['header']['header']['SessionId']
-        except Exception as exc:
-            raise MembersuiteLoginError(exc)
+        self.session_id = self.get_session_id_from_login_result(
+            login_result=result)
+
+        if not self.session_id:
+            raise MembersuiteLoginError(
+                result["body"]["LoginResult"]["Errors"])
 
         return self.session_id
 
@@ -105,27 +104,3 @@ class ConciergeClient(object):
         signature.text = self.get_hashed_signature(url=url)
 
         return concierge_request_header
-
-    def login_to_portal(self, username, password):
-        """Logs `username` into the MemberSuite Portal.
-
-        This could go into aashe-auth instead of here.
-        """
-        if not self.session_id:
-            self.request_session()
-
-        concierge_request_header = self.construct_concierge_header(
-            url="http://membersuite.com/path/to/LoginToPortal")
-
-        result = self.client.service.LoginToPortal(
-            _soapheaders=[concierge_request_header],
-            userName=self.username,
-            password=self.password,
-            loginDestination=self.association_id,
-            magicArgsToPassUsernameAndPasswordToLoginWith=(username,
-                                                           password))
-
-        if magic_test_of_result():
-            return membersuite_security_token_or_something_like_that
-        else:
-            raise LoginToPortalError(result["interesting magic bits"])
