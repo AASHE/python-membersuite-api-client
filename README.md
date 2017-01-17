@@ -20,16 +20,6 @@ also check the box for "API User" for this new user account.
 Create a keypair for this user via the console and save the credentials
 generated somewhere secure (they cannot be retrieved later if lost)
 
-## Environment Variables
-
-MS_ACCESS_KEY - MemberSuite access key from API user keypair
-MS_SECRET_KEY - MemberSuite secret key from API user keypair
-MS_ASSOCIATION_ID - Association ID
-MS_USER_ID - User ID for the API user you created
-MS_USER_PASS - Password for the API user you created
-
-These are all required to properly generate the hashed signature data and
-to call the Login WSDL method to authenticate and generate a session ID.
 
 ## Usage
 
@@ -47,9 +37,8 @@ usage, see http://api.docs.membersuite.com/
 Use request_session() as a model for constructing the headers for 
 your own functions in your app that follow this method:
 
-    1) Alter client.url. Use the full URL for the SOAP action you are taking.
-    2) Call client.construct_concierge_header() to generate a new header element.
-    3) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
-    4) Return any relevant data out of the response object
+    1) Call client.construct_concierge_header(url) to generate a new header element, using your method's URL as an argument.
+    2) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
+    3) Return any relevant data out of the response object
 
 ***IMPORTANT NOTE: In constructing headers, SessionId must appear first.***
