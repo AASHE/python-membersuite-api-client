@@ -24,7 +24,7 @@ class ConciergeClientTestCase(unittest.TestCase):
             secret_key=("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="),
             association_id="00000000-0000-0000-0000-000000000000")
-
+    
         # Modify attributes to use sample data from API docs
         # to test that signature is hashed properly.
         client.session_id = "11111111-1111-1111-1111-111111111111"
@@ -78,10 +78,9 @@ class ConciergeClientTestCase(unittest.TestCase):
         arguments = {
             'Name': 'AASHE Test Campus',
         }
-
         response = client.query_orgs(arguments)
-        self.assertEqual(response["MemberSuiteObject"][0]["Fields"]
-                         ["KeyValueOfstringanyType"][28]["Value"],
+        self.assertEqual(response[0]["Fields"]["KeyValueOfstringanyType"]
+                         [28]["Value"],
                          'AASHE Test Campus')
 
 if __name__ == '__main__':

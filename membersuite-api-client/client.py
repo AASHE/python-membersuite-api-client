@@ -128,4 +128,4 @@ class ConciergeClient(object):
             startRecord=0
         )
         return(result["body"]["ExecuteMSQLResult"]["ResultValue"]
-               ["ObjectSearchResult"]["Objects"])
+               ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
