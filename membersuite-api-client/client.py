@@ -104,3 +104,28 @@ class ConciergeClient(object):
         signature.text = self.get_hashed_signature(url=url)
 
         return concierge_request_header
+
+    def query_orgs(self, parameters):
+        """
+        Constructs request to MemberSuite to query organization objects
+        based on arguments provided.
+
+        arguments: A dictionary of key-value pairs (field name: value)
+        """
+        concierge_request_header = self.construct_concierge_header(
+            url="http://membersuite.com/contracts/IConciergeAPIService/ExecuteMSQL")
+
+        query = "SELECT Objects() FROM Organization"
+        if parameters:
+            query += " WHERE"
+            for key in parameters:
+                query += " %s = '%s' AND" % (key, parameters[key])
+            query = query[:-4]
+
+        result = self.client.service.ExecuteMSQL(
+            _soapheaders=[concierge_request_header],
+            msqlStatement=query,
+            startRecord=0
+        )
+        return(result["body"]["ExecuteMSQLResult"]["ResultValue"]
+               ["ObjectSearchResult"]["Objects"])
