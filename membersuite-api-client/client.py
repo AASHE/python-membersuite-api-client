@@ -108,9 +108,9 @@ class ConciergeClient(object):
     def query_orgs(self, parameters):
         """
         Constructs request to MemberSuite to query organization objects
-        based on arguments provided.
+        based on parameters provided.
 
-        arguments: A dictionary of key-value pairs (field name: value)
+        parameters: A dictionary of key-value pairs (field name: value)
         """
         concierge_request_header = self.construct_concierge_header(
             url="http://membersuite.com/contracts/IConciergeAPIService/ExecuteMSQL")
