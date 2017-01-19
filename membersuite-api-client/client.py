@@ -105,7 +105,7 @@ class ConciergeClient(object):
 
         return concierge_request_header
 
-    def query_orgs(self, parameters):
+    def query_orgs(self, parameters=None, since_when=None):
         """
         Constructs request to MemberSuite to query organization objects
         based on parameters provided.
@@ -113,19 +113,33 @@ class ConciergeClient(object):
         parameters: A dictionary of key-value pairs (field name: value)
         """
         concierge_request_header = self.construct_concierge_header(
-            url="http://membersuite.com/contracts/IConciergeAPIService/ExecuteMSQL")
+            url="http://membersuite.com/contracts/"
+                "IConciergeAPIService/ExecuteMSQL")
 
-        query = "SELECT Objects() FROM Organization"
+        query = "SELECT Objects() FROM Organization "
         if parameters:
-            query += " WHERE"
+            query += "WHERE"
             for key in parameters:
                 query += " %s = '%s' AND" % (key, parameters[key])
             query = query[:-4]
+
+            if since_when:
+                query += " AND LastModifiedDate > '{since_when} 00:00:00'"\
+                    .format(since_when=since_when.isoformat()
+                )
+        elif since_when:
+            query += "WHERE LastModifiedDate > '{since_when} 00:00:00'".format(
+                    since_when=since_when.isoformat()
+                )
 
         result = self.client.service.ExecuteMSQL(
             _soapheaders=[concierge_request_header],
             msqlStatement=query,
             startRecord=0
         )
-        return(result["body"]["ExecuteMSQLResult"]["ResultValue"]
-               ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
+
+        if result["body"]["ExecuteMSQLResult"]["ResultValue"]["ObjectSearchResult"]["Objects"]:
+            return(result["body"]["ExecuteMSQLResult"]["ResultValue"]
+                   ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
+        else:
+            return None
