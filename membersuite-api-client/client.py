@@ -14,14 +14,11 @@ class MembersuiteLoginError(Exception):
 
 class ConciergeClient(object):
 
-    def __init__(self, username, password, access_key, secret_key,
-                 association_id):
+    def __init__(self, access_key, secret_key, association_id):
         """
         Initializes Client object by pulling in authentication credentials.
         Altered to make "request_session" a manual call to facilitate testing.
         """
-        self.username = username
-        self.password = password
         self.access_key = access_key
         self.secret_key = secret_key
         self.association_id = association_id
@@ -55,13 +52,10 @@ class ConciergeClient(object):
         :return: Session ID to be placed in header of all other requests.
         """
         concierge_request_header = self.construct_concierge_header(
-            url="http://membersuite.com/contracts/IConciergeAPIService/Login")
+            url="http://membersuite.com/contracts/IConciergeAPIService/WhoAmI")
 
-        result = self.client.service.Login(
-            _soapheaders=[concierge_request_header],
-            userName=self.username,
-            password=self.password,
-            loginDestination=self.association_id)
+        result = self.client.service.WhoAmI(
+            _soapheaders=[concierge_request_header])
 
         self.session_id = self.get_session_id_from_login_result(
             login_result=result)
@@ -125,12 +119,10 @@ class ConciergeClient(object):
 
             if since_when:
                 query += " AND LastModifiedDate > '{since_when} 00:00:00'"\
-                    .format(since_when=since_when.isoformat()
-                )
+                    .format(since_when=since_when.isoformat())
         elif since_when:
             query += "WHERE LastModifiedDate > '{since_when} 00:00:00'".format(
-                    since_when=since_when.isoformat()
-                )
+                since_when=since_when.isoformat())
 
         result = self.client.service.ExecuteMSQL(
             _soapheaders=[concierge_request_header],
