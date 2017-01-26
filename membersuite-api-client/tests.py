@@ -5,8 +5,8 @@ from client import ConciergeClient
 import datetime
 
 
-MS_USER_ID = os.environ["MS_USER_ID"]
-MS_USER_PASS = os.environ["MS_USER_PASS"]
+MS_USER_ID = os.environ.get("MS_USER_ID", None)
+MS_USER_PASS = os.environ.get("MS_USER_PASS", None)
 MS_ACCESS_KEY = os.environ["MS_ACCESS_KEY"]
 MS_SECRET_KEY = os.environ["MS_SECRET_KEY"]
 MS_ASSOCIATION_ID = os.environ["MS_ASSOCIATION_ID"]
@@ -19,8 +19,6 @@ class ConciergeClientTestCase(unittest.TestCase):
         Tests that we are properly hashing the signature data
         """
         client = ConciergeClient(
-            username=MS_USER_ID,
-            password=MS_USER_PASS,
             access_key=MS_ACCESS_KEY,
             secret_key=("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="),
@@ -37,9 +35,7 @@ class ConciergeClientTestCase(unittest.TestCase):
         """
         Can we send a login request and receive a session ID?
         """
-        client = ConciergeClient(username=MS_USER_ID,
-                                 password=MS_USER_PASS,
-                                 access_key=MS_ACCESS_KEY,
+        client = ConciergeClient(access_key=MS_ACCESS_KEY,
                                  secret_key=MS_SECRET_KEY,
                                  association_id=MS_ASSOCIATION_ID)
 
@@ -67,9 +63,7 @@ class ConciergeClientTestCase(unittest.TestCase):
         """
         Can we call the search method and receive an org object back?
         """
-        client = ConciergeClient(username=MS_USER_ID,
-                                 password=MS_USER_PASS,
-                                 access_key=MS_ACCESS_KEY,
+        client = ConciergeClient(access_key=MS_ACCESS_KEY,
                                  secret_key=MS_SECRET_KEY,
                                  association_id=MS_ASSOCIATION_ID)
 
@@ -83,7 +77,7 @@ class ConciergeClientTestCase(unittest.TestCase):
         self.assertEqual(response[0]["Fields"]["KeyValueOfstringanyType"]
                          [28]["Value"],
                          'AASHE Test Campus')
-            
+
         # Test querying orgs modified in the last day
         # (there should be zero in our sandbox)
         since_when = datetime.date.today() - datetime.timedelta(1)
