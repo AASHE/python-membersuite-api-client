@@ -22,8 +22,8 @@ class SubscriptionTestCase(unittest.TestCase):
             association_id=MS_ASSOCIATION_ID)
 
         ss = STARSSubscriptionService(client)
-        org_id = "6faf90e4-0007-c91c-7dc8-0b3c53985743"
-        subscription_list = ss.get_subscriptions(org_id)
+        test_org_id = "6faf90e4-0007-c91c-7dc8-0b3c53985743"
+        subscription_list = ss.get_subscriptions(test_org_id)
         self.assertNotEqual(subscription_list, None)
 
 
