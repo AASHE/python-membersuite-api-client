@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from client import ConciergeClient
+from ..client import ConciergeClient
 import datetime
 
 
