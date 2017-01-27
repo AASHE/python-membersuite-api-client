@@ -23,7 +23,8 @@ class SubscriptionTestCase(unittest.TestCase):
 
         ss = STARSSubscriptionService(client)
         org_id = "6faf90e4-0007-c91c-7dc8-0b3c53985743"
-        subscription = ss.get_subscriptions(org_id)
+        subscription_list = ss.get_subscriptions(org_id)
+        self.assertNotEqual(subscription_list, None)
 
 
 if __name__ == '__main__':
