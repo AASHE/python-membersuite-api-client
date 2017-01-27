@@ -15,7 +15,7 @@ setup(name='membersuite_api_client',
       url='https://github.com/AASHE/python-membersuite-api-client',
       long_description=read("README.md"),
       packages=[
-          'membersuite-api-client',
+          'membersuite_api_client',
       ],
       classifiers=[
           'Environment :: Web Environment',
