@@ -135,3 +135,14 @@ class ConciergeClient(object):
                    ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
         else:
             return None
+
+    def runSQL(self, query, start_record=0):
+        concierge_request_header = self.construct_concierge_header(
+            url="http://membersuite.com/contracts/"
+                "IConciergeAPIService/ExecuteMSQL")
+        result = self.client.service.ExecuteMSQL(
+            _soapheaders=[concierge_request_header],
+            msqlStatement=query,
+            startRecord=start_record
+        )
+        return result
