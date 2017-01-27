@@ -12,9 +12,9 @@ MS_ASSOCIATION_ID = os.environ["MS_ASSOCIATION_ID"]
 
 class SubscriptionTestCase(unittest.TestCase):
 
-    def test_get_current_subscription(self):
+    def test_get_subscriptions(self):
         """
-        Get the current subscription for an organization
+        Get the all subscriptions for an organization
         """
         client = ConciergeClient(
             access_key=MS_ACCESS_KEY,
@@ -23,7 +23,7 @@ class SubscriptionTestCase(unittest.TestCase):
 
         ss = STARSSubscriptionService(client)
         org_id = "6faf90e4-0007-c91c-7dc8-0b3c53985743"
-        subscription = ss.get_current_subscription(org_id)
+        subscription = ss.get_subscriptions(org_id)
 
 
 if __name__ == '__main__':
