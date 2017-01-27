@@ -8,7 +8,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='membersuite-api-client',
-      version='0.1.1',
+      version='0.1.2',
       description='MemberSuite API Client',
       author='AASHE',
       author_email='webdev@aashe.org',
