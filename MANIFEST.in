@@ -1,4 +1,4 @@
 include LICENSE
 include README.md
 include setup.py
-recursive-include membersuite-api-client *
+recursive-include membersuite_api_client *

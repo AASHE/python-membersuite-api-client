@@ -1,2 +1,7 @@
 [run]
-source = membersuite-api-client
+source = membersuite_api_client
+
+omit =
+    */python?.?/*
+    */site-packages/*
+    */unittest2/*
