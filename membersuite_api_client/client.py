@@ -40,6 +40,8 @@ class ConciergeClient(object):
         return base64.b64encode(hashed).decode("utf-8")
 
     def get_session_id_from_login_result(self, login_result):
+        # @TODO this should be renamed and moved to utils.py.
+        # rename to `get_session_id_from_api_response`
         try:
             return login_result["header"]["header"]["SessionId"]
         except TypeError:
@@ -62,7 +64,7 @@ class ConciergeClient(object):
 
         if not self.session_id:
             raise MembersuiteLoginError(
-                result["body"]["LoginResult"]["Errors"])
+                result["body"]["WhoAmIResult"]["Errors"])
 
         return self.session_id
 
@@ -134,16 +136,6 @@ class ConciergeClient(object):
                    ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
         else:
             return None
-
-    def convert_ms_object(self, ms_object):
-        """
-        Converts the list of dictionaries with keys "key" and "value" into
-        more logical value-key pairs in a plain dictionary.
-        """
-        out_dict = {}
-        for item in ms_object:
-            out_dict[item["Key"]] = item["Value"]
-        return out_dict
 
     def runSQL(self, query, start_record=0):
         concierge_request_header = self.construct_concierge_header(
