@@ -1,8 +1,9 @@
+import datetime
 import os
 import unittest
 
 from ..client import ConciergeClient
-import datetime
+from ..utils import get_session_id
 
 
 MS_ACCESS_KEY = os.environ["MS_ACCESS_KEY"]
@@ -53,9 +54,8 @@ class ConciergeClientTestCase(unittest.TestCase):
         # Check that the session ID in the response headers matches the
         # previously obtained session, so the user was not re-authenticated
         # but properly used the established session.
-        self.assertEqual(
-            client.get_session_id_from_login_result(login_result=response),
-            client.session_id)
+        self.assertEqual(get_session_id(result=response),
+                         client.session_id)
 
     def test_query_orgs(self):
         """

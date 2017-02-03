@@ -7,3 +7,14 @@ def convert_ms_object(ms_object):
     for item in ms_object:
         out_dict[item["Key"]] = item["Value"]
     return out_dict
+
+
+def get_session_id(result):
+    """Returns the Session ID for an API result.
+
+    When there's no Session ID, returns None.
+    """
+    try:
+        return result["header"]["header"]["SessionId"]
+    except TypeError:
+        return None
