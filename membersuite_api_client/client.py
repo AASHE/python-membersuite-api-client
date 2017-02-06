@@ -4,6 +4,9 @@ from zeep import Client
 import base64
 import hmac
 
+from .utils import get_session_id
+
+
 XHTML_NAMESPACE = "http://membersuite.com/schemas"
 
 
@@ -39,12 +42,6 @@ class ConciergeClient(object):
         hashed = hmac.new(secret_b, data_b, sha1).digest()
         return base64.b64encode(hashed).decode("utf-8")
 
-    def get_session_id_from_login_result(self, login_result):
-        try:
-            return login_result["header"]["header"]["SessionId"]
-        except TypeError:
-            return None
-
     def request_session(self):
         """
         Performs initial request to initialize session and get session id
@@ -57,12 +54,11 @@ class ConciergeClient(object):
         result = self.client.service.WhoAmI(
             _soapheaders=[concierge_request_header])
 
-        self.session_id = self.get_session_id_from_login_result(
-            login_result=result)
+        self.session_id = get_session_id(result=result)
 
         if not self.session_id:
             raise MembersuiteLoginError(
-                result["body"]["LoginResult"]["Errors"])
+                result["body"]["WhoAmIResult"]["Errors"])
 
         return self.session_id
 
@@ -134,16 +130,6 @@ class ConciergeClient(object):
                    ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"])
         else:
             return None
-
-    def convert_ms_object(self, ms_object):
-        """
-        Converts the list of dictionaries with keys "key" and "value" into
-        more logical value-key pairs in a plain dictionary.
-        """
-        out_dict = {}
-        for item in ms_object:
-            out_dict[item["Key"]] = item["Value"]
-        return out_dict
 
     def runSQL(self, query, start_record=0):
         concierge_request_header = self.construct_concierge_header(

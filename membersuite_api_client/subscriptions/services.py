@@ -17,6 +17,7 @@
 """
 
 from .models import Subscription
+from ..utils import convert_ms_object
 
 
 class SubscriptionService(object):
@@ -48,7 +49,7 @@ class SubscriptionService(object):
 
             subscription_list = []
             for obj in objects:
-                sane_obj = self.client.convert_ms_object(
+                sane_obj = convert_ms_object(
                     obj['Fields']['KeyValueOfstringanyType'])
                 subscription = Subscription(
                     id=sane_obj['ID'],
