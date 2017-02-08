@@ -1,11 +1,6 @@
 from .models import PortalUser
+from ..exceptions import LoginToPortalError
 from ..utils import get_session_id
-
-
-class LoginToPortalError(Exception):
-
-    def __init__(self, result):
-        self.result = result
 
 
 def login_to_portal(username, password, client):
