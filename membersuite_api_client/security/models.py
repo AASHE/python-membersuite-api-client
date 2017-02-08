@@ -41,7 +41,6 @@ class PortalUser(object):
         msql_result = result["body"]["ExecuteMSQLResult"]
 
         if msql_result["Success"]:
-            print msql_result
             individual = msql_result["ResultValue"]["SingleObject"]
             return Individual(individual=individual, portal_user=self)
         else:
