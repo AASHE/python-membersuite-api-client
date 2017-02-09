@@ -5,10 +5,9 @@
 
 """
 
-from .models import Membership
+from .models import Membership, MembershipProduct
 from ..utils import convert_ms_object
 from zeep.exceptions import TransportError
-import datetime
 
 
 class MembershipService(object):
@@ -45,7 +44,6 @@ class MembershipService(object):
         Must loop over 400 indexes at a time. Recursively calls itself until
         a non-full queryset is received, returning a joined set each time.
         """
-        print(datetime.datetime.now(), start_record)
         if not self.client.session_id:
             self.client.request_session()
 
@@ -97,7 +95,7 @@ class MembershipService(object):
         result = self.client.runSQL(query)
         msql_result = result['body']['ExecuteMSQLResult']
         if not msql_result['Errors']:
-            return self.package_memberships(msql_result)
+            return self.package_membership_products(msql_result)
         else:
             return None
 
@@ -128,7 +126,7 @@ class MembershipService(object):
         for obj in objects:
             sane_obj = convert_ms_object(
                 obj['Fields']['KeyValueOfstringanyType'])
-            product = Membership(sane_obj)
+            product = MembershipProduct(sane_obj)
             product_list.append(product)
 
         return product_list
