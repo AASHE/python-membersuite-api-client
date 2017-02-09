@@ -18,18 +18,19 @@ class OrganizationService(object):
         """
         self.client = client
 
-    def query_orgs(self, parameters=None, since_when=None, get_all=False,
-                   results=None, start_record=0):
+    def get_orgs(self, parameters=None, get_all=False, since_when=None,
+                 results=None, start_record=0, limit_to=200, depth=1,
+                 max_depth=None):
         """
         Constructs request to MemberSuite to query organization objects
         based on parameters provided.
-        Must loop over 400 indexes at a time. Recursively calls itself until
-        a non-full queryset is received, returning a joined set each time.
+
+        Loop over queries of size limit_to until either a non-full queryset
+        is returned, or max_depth is reached (used in tests). Then the
+        recursion collapses to return a single concatenated list.
         """
-        print("STARTING INDEX: ", start_record)
-        concierge_request_header = self.construct_concierge_header(
-            url="http://membersuite.com/contracts/"
-                "IConciergeAPIService/ExecuteMSQL")
+        if not self.client.session_id:
+            self.client.request_session()
 
         query = "SELECT Objects() FROM Organization "
         if parameters and not get_all:
@@ -50,53 +51,45 @@ class OrganizationService(object):
                 start_record=start_record,
                 limit_to=limit_to,
             )
-            result = self.client.service.ExecuteMSQL(
-                _soapheaders=[concierge_request_header],
-                msqlStatement=query,
-                startRecord=start_record,
-                maximumNumberOfRecordsToReturn=400,
-            )
+
         except TransportError:
             # API Intermittently fails and kicks a 504,
             # this is a way to retry if that happens.
-            result = self.query_orgs(parameters=parameters,
-                                     since_when=since_when,
-                                     get_all=get_all,
-                                     results=results,
-                                     start_record=start_record)
-            return result
+            result = self.get_orgs(
+                parameters=parameters,
+                get_all=get_all,
+                since_when=since_when,
+                results=results,
+                start_record=start_record,
+                limit_to=limit_to,
+                depth=depth,
+                max_depth=max_depth,
+            )
 
-        # Check that we don't have an empty set returned
-        if (result["body"]["ExecuteMSQLResult"]["ResultValue"]
-            ["ObjectSearchResult"]["TotalRowCount"] > 0):
-            if results:
-                new_results = (results.append(result["body"]
-                                              ["ExecuteMSQLResult"]
-                                              ["ResultValue"]
-                                              ["ObjectSearchResult"]
-                                              ["Objects"]
-                                              ["MemberSuiteObject"]))
-            else:
-                new_results = result["body"]["ExecuteMSQLResult"]\
-                    ["ResultValue"]["ObjectSearchResult"]["Objects"]\
-                    ["MemberSuiteObject"]
-        # If set was empty, just return the existing results
-        # (empty list if first iteration)
+        msql_result = result['body']["ExecuteMSQLResult"]
+        if not msql_result['Errors'] and \
+                msql_result["ResultValue"]["ObjectSearchResult"]["Objects"]:
+            new_results = self.package_organizations(msql_result["ResultValue"]
+                                                     ["ObjectSearchResult"]
+                                                     ["Objects"]
+                                                     ["MemberSuiteObject"]
+                                                     ) + (results or [])
+            # Check if the queryset was completely full. If so, there may be
+            # More results we need to query
+            if len(new_results) >= limit_to and depth < max_depth:
+                new_results = self.get_orgs(
+                    parameters=parameters,
+                    get_all=get_all,
+                    since_when=since_when,
+                    results=new_results,
+                    start_record=start_record + limit_to,
+                    limit_to=limit_to,
+                    depth=depth + 1,
+                    max_depth=max_depth
+                )
+            return new_results
         else:
-            new_results = results
-
-        # Check if the queryset was completely full. If so, there may be
-        # More results we need to query
-        if len(result["body"]["ExecuteMSQLResult"]["ResultValue"]
-               ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"]) == 400:
-            # Call this function again recursively, passing the existing
-            # results and the new index where to start
-            new_results = self.query_orgs(parameters=parameters,
-                                          since_when=since_when,
-                                          get_all=get_all,
-                                          results=new_results,
-                                          start_record=start_record + 400)
-        return self.package_organizations(new_results)
+            return None
 
     def package_organizations(self, obj_list):
         """

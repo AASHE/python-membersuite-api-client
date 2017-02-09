@@ -1,5 +1,3 @@
-import unittest
-
 from .base import BaseTestCase
 from ..memberships.services import MembershipService
 from ..memberships.models import Membership, MembershipProduct
