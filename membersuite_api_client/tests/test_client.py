@@ -57,31 +57,6 @@ class ConciergeClientTestCase(unittest.TestCase):
         self.assertEqual(get_session_id(result=response),
                          client.session_id)
 
-    def test_query_orgs(self):
-        """
-        Can we call the search method and receive an org object back?
-        """
-        client = ConciergeClient(access_key=MS_ACCESS_KEY,
-                                 secret_key=MS_SECRET_KEY,
-                                 association_id=MS_ASSOCIATION_ID)
-
-        # Send a login request to receive a session id
-        session_id = client.request_session()
-        self.assertTrue(session_id)
-        parameters = {
-            'Name': 'AASHE Test Campus',
-        }
-        response = client.query_orgs(parameters)
-        self.assertEqual(response[0]["Fields"]["KeyValueOfstringanyType"]
-                         [28]["Value"],
-                         'AASHE Test Campus')
-
-        # Test querying orgs modified in the last day
-        # (there should be zero in our sandbox)
-        since_when = datetime.date.today() - datetime.timedelta(1)
-        response = client.query_orgs(parameters, since_when)
-        # self.assertFalse(response)
-
 
 if __name__ == '__main__':
     unittest.main()
