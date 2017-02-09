@@ -27,13 +27,12 @@ class MembershipServiceTestCase(BaseTestCase):
 
     def test_get_all_memberships(self):
         """
-        Get all memberships beginning with index 700, which should ensure
-        we run two API calls, one for 200, and one for under 200,
-        and are able to test the recursion without having to query all
-        942+ records (which takes about 10 minutes)
+        Does the get_all_memberships() method work?
         """
-        membership_list = self.service.get_all_memberships(start_record=700)
-        self.assertTrue(len(membership_list) > 200)
+        membership_list = self.service.get_all_memberships(
+            limit_to=1, max_depth=2
+        )
+        self.assertEqual(len(membership_list), 2)
 
     def test_get_all_membership_products(self):
         """

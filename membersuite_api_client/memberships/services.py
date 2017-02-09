@@ -37,12 +37,14 @@ class MembershipService(object):
         return None
 
     def get_all_memberships(self, since_when=None, results=None,
-                            start_record=0):
+                            start_record=0, limit_to=200,
+                            depth=1, max_depth=None):
         """
         Retrieve all memberships updated since "since_when"
 
-        Must loop over 400 indexes at a time. Recursively calls itself until
-        a non-full queryset is received, returning a joined set each time.
+        Loop over queries of size limit_to until either a non-full queryset
+        is returned, or max_depth is reached (used in tests). Then the
+        recursion collapses to return a single concatenated list.
         """
         if not self.client.session_id:
             self.client.request_session()
@@ -56,8 +58,12 @@ class MembershipService(object):
             query += " ORDER BY LocalID"
 
         try:
-            result = self.client.runSQL(query, start_record=start_record,
-                                        limit_to=200)
+            result = self.client.runSQL(
+                query=query,
+                start_record=start_record,
+                limit_to=limit_to,
+            )
+
         except TransportError:
             # API Intermittently fails and kicks a 504,
             # this is a way to retry if that happens.
@@ -65,6 +71,9 @@ class MembershipService(object):
                 since_when=since_when,
                 results=results,
                 start_record=start_record,
+                limit_to=limit_to,
+                depth=depth,
+                max_depth=max_depth,
             )
 
         msql_result = result['body']["ExecuteMSQLResult"]
@@ -75,11 +84,15 @@ class MembershipService(object):
                               (results or [])
             # Check if the queryset was completely full. If so, there may be
             # More results we need to query
-            if len(new_results) >= 200:
+            if len(new_results) >= limit_to and depth < max_depth:
                 new_results = self.get_all_memberships(
                     since_when=since_when,
                     results=new_results,
-                    start_record=start_record + 200)
+                    start_record=start_record + limit_to,
+                    limit_to=limit_to,
+                    depth=depth+1,
+                    max_depth=max_depth
+                )
             return new_results
         else:
             return results
@@ -121,12 +134,11 @@ class MembershipService(object):
         """
         obj_result = msql_result['ResultValue']['ObjectSearchResult']
         objects = obj_result['Objects']['MemberSuiteObject']
-
         product_list = []
         for obj in objects:
             sane_obj = convert_ms_object(
-                obj['Fields']['KeyValueOfstringanyType'])
+                obj['Fields']['KeyValueOfstringanyType']
+            )
             product = MembershipProduct(sane_obj)
             product_list.append(product)
-
         return product_list

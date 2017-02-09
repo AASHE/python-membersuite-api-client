@@ -45,6 +45,11 @@ class OrganizationService(object):
             query += "WHERE LastModifiedDate > '{since_when} 00:00:00'".format(
                 since_when=since_when.isoformat())
         try:
+            result = self.client.runSQL(
+                query=query,
+                start_record=start_record,
+                limit_to=limit_to,
+            )
             result = self.client.service.ExecuteMSQL(
                 _soapheaders=[concierge_request_header],
                 msqlStatement=query,
@@ -93,8 +98,16 @@ class OrganizationService(object):
                                           start_record=start_record + 400)
         return self.package_organizations(new_results)
 
-    def package_organizations(self, org_list):
+    def package_organizations(self, obj_list):
         """
         Loops through MS objects returned from queries to turn them into
         Organization objects and pack them into a list for later use.
         """
+        org_list = []
+        for obj in obj_list:
+            sane_obj = convert_ms_object(
+                obj['Fields']['KeyValueOfstringanyType']
+            )
+            org = Organization(sane_obj)
+            org_list.append(org)
+        return org_list
