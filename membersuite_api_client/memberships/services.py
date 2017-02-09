@@ -79,9 +79,13 @@ class MembershipService(object):
         msql_result = result['body']["ExecuteMSQLResult"]
         if (not msql_result['Errors'] and msql_result["ResultValue"]
                 ["ObjectSearchResult"]["Objects"]):
-            new_results = msql_result["ResultValue"]["ObjectSearchResult"]\
-                              ["Objects"]["MemberSuiteObject"] + \
-                              (results or [])
+            new_results = self.package_memberships(msql_result
+                                                   ["ResultValue"]
+                                                   ["ObjectSearchResult"]
+                                                   ["Objects"]
+                                                   ["MemberSuiteObject"]
+                                                   ) + (results or [])
+
             # Check if the queryset was completely full. If so, there may be
             # More results we need to query
             if len(new_results) >= limit_to and depth < max_depth:
