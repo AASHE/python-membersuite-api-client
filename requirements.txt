@@ -1,2 +1,4 @@
+cmd2==0.6.9  # for msql shell
+future==0.16.0  # for msql shell
 lxml==3.7.0
 zeep==0.23.0

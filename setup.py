@@ -7,6 +7,7 @@ import os
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 setup(name='membersuite_api_client',
       version='0.1.3',
       description='MemberSuite API Client',
@@ -25,5 +26,7 @@ setup(name='membersuite_api_client',
           'Programming Language :: Python :: 3.4.3',
       ],
       include_package_data=True,
-      install_requires=["zeep>=0.26"]
+      install_requires=["cmd2==0.6.9",
+                        "future==0.16.0",
+                        "zeep>=0.26"]
       )
