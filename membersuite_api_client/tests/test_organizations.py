@@ -1,6 +1,6 @@
 from .base import BaseTestCase
 from ..organizations.services import OrganizationService
-from ..organizations.models import Organization
+from ..organizations.models import Organization, OrganizationType
 
 
 class OrganizationServiceTestCase(BaseTestCase):
@@ -28,3 +28,11 @@ class OrganizationServiceTestCase(BaseTestCase):
                                          max_depth=2)
         self.assertEqual(len(org_list), 2)
         self.assertEqual(type(org_list[0]), Organization)
+
+    def test_get_org_types(self):
+        """
+        Test fetching all org type objects
+        """
+        org_type_list = self.service.get_org_types()
+        self.assertTrue(len(org_type_list))
+        self.assertTrue(type(org_type_list[0]), OrganizationType)

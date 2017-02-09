@@ -5,7 +5,7 @@
 
 """
 
-from .models import Organization
+from .models import Organization, OrganizationType
 from ..utils import convert_ms_object
 from zeep.exceptions import TransportError
 
@@ -91,6 +91,21 @@ class OrganizationService(object):
         else:
             return None
 
+    def get_org_types(self):
+        """
+        Retrieves all current OrganizationType objects
+        """
+        if not self.client.session_id:
+            self.client.request_session()
+
+        query = "SELECT Objects() FROM OrganizationType"
+        result = self.client.runSQL(query=query)
+        msql_result = result['body']["ExecuteMSQLResult"]
+        return self.package_org_types(msql_result["ResultValue"]
+                                      ["ObjectSearchResult"]
+                                      ["Objects"]["MemberSuiteObject"]
+                                      )
+
     def package_organizations(self, obj_list):
         """
         Loops through MS objects returned from queries to turn them into
@@ -104,3 +119,17 @@ class OrganizationService(object):
             org = Organization(sane_obj)
             org_list.append(org)
         return org_list
+
+    def package_org_types(self, obj_list):
+        """
+        Loops through MS objects returned from queries to turn them into
+        OrganizationType objects and pack them into a list for later use.
+        """
+        org_type_list = []
+        for obj in obj_list:
+            sane_obj = convert_ms_object(
+                obj['Fields']['KeyValueOfstringanyType']
+            )
+            org = OrganizationType(sane_obj)
+            org_type_list.append(org)
+        return org_type_list
