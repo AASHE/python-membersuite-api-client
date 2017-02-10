@@ -24,6 +24,17 @@ class PortalUser(MemberSuiteObject):
         self.owner = self.fields["Owner"]
         self.session_id = session_id
 
+    def __str__(self):
+        return ("<PortalUser: ID: {id}, email_address: {email_address}, "
+                "first_name: {first_name}, last_name: {last_name}, "
+                "owner: {owner}, session_id: {session_id}>".format(
+                    id=self.id,
+                    email_address=self.email_address,
+                    first_name=self.first_name,
+                    last_name=self.last_name,
+                    owner=self.owner,
+                    session_id=self.session_id))
+
     def get_username(self):
         return "_membersuite_id_{}".format(self.id)
 
