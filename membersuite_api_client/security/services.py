@@ -29,7 +29,7 @@ def login_to_portal(username, password, client):
 
         session_id = get_session_id(result=result)
 
-        return PortalUser(portal_user=portal_user,
+        return PortalUser(membersuite_object_data=portal_user,
                           session_id=session_id)
     else:
         raise LoginToPortalError(result=result)

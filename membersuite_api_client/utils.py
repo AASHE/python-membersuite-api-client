@@ -18,3 +18,19 @@ def get_session_id(result):
         return result["header"]["header"]["SessionId"]
     except TypeError:
         return None
+
+
+def membersuite_object_factory(membersuite_object_data):
+    from .models import MemberSuiteObject
+    import membersuite_api_client.security.models as security_models
+
+    klasses = {"Individual": security_models.Individual,
+               "PortalUser": security_models.PortalUser}
+
+    try:
+        klass = klasses[membersuite_object_data["ClassType"]]
+    except KeyError:
+        return MemberSuiteObject(
+            membersuite_object_data=membersuite_object_data)
+    else:
+        return klass(membersuite_object_data=membersuite_object_data)
