@@ -5,3 +5,4 @@ omit =
     */python?.?/*
     */site-packages/*
     */unittest2/*
+    */tests/*
