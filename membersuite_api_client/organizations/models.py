@@ -4,8 +4,11 @@ class Organization(object):
         """Create an Organization model from MemberSuite Organization object
         """
         self.account_num = org["ID"]
+        self.id = self.account_num
         self.membersuite_id = org["LocalID"]
+        self.local_id = self.membersuite_id
         self.org_name = org["Name"]
+        self.name = self.org_name
         self.picklist_name = org["SortName"] or ''
 
         address = org["Mailing_Address"]

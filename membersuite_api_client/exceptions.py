@@ -25,6 +25,16 @@ class LoginToPortalError(MemberSuiteAPIError):
     result_type = "LoginToPortalResult"
 
 
+class LogoutError(MemberSuiteAPIError):
+
+    result_type = "LogoutResult"
+
+
 class ExecuteMSQLError(MemberSuiteAPIError):
 
     result_type = "ExecuteMSQLResult"
+
+
+class GetPrimaryMembershipError(MemberSuiteAPIError):
+
+    result_type = "GetPrimaryMembershipResult"

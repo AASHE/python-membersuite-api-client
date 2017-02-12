@@ -4,10 +4,11 @@
     http://api.docs.membersuite.com/#References/Objects/Membership.htm
 
 """
+from zeep.exceptions import TransportError
 
 from .models import Membership, MembershipProduct
+from ..exceptions import GetPrimaryMembershipError
 from ..utils import convert_ms_object
-from zeep.exceptions import TransportError
 
 
 class MembershipService(object):
@@ -146,3 +147,27 @@ class MembershipService(object):
             product = MembershipProduct(sane_obj)
             product_list.append(product)
         return product_list
+
+
+def get_primary_membership(organization_id, entity_id, client):
+    if not client.session_id:
+        client.request_session()
+
+    concierge_request_header = client.construct_concierge_header(
+        url=("http://membersuite.com/contracts/IConciergeAPIService/"
+             "GetPrimaryMembership"))
+
+    result = client.client.service.GetPrimaryMembership(
+        _soapheaders=[concierge_request_header],
+        membershipOrganizationID=organization_id,
+        entityID=entity_id)
+
+    get_primary_membership_result = (
+        result["body"]["GetPrimaryMembershipResult"])
+
+    if get_primary_membership_result["Success"]:
+        membership = get_primary_membership_result["ResultValue"]["Membership"]
+
+        return Membership(membersuite_object_data=membership)
+    else:
+        raise GetPrimaryMembershipError(result=result)
