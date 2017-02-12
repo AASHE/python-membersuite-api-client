@@ -4,7 +4,7 @@ import unittest
 from ..client import ConciergeClient
 from ..exceptions import LoginToPortalError, MemberSuiteAPIError
 from ..security import models
-from ..security.services import login_to_portal, logout
+from ..security.services import login_to_portal
 
 
 def get_new_client():
@@ -96,11 +96,17 @@ class IndividualTestCase(unittest.TestCase):
         is_member = self.individual_member.is_member(client=self.client)
         self.assertTrue(is_member)
 
+    # test_is_member_for_nonmember() below can't succeed, because it
+    # doesn't know about any non-member to use. Once non-member data
+    # (at least a non-member Organization and a connected Individudal
+    # with Portal Access) is available, push it into the env in
+    # TEST_NON_MEMBER_MS_PORTAL_USER_ID and
+    # TEST_NON_MEMBER_MS_PORTAL_USER_PASS and unskip this test.
+    @unittest.skip("Because it can't succeed")
     def test_is_member_for_nonmember(self):
         """Does is_member() work for non-members?
 
         """
-        # logout(client=self.client)
         client = get_new_client()
         client.request_session()
         non_member_portal_user = get_portal_user(client=client,

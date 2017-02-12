@@ -33,8 +33,3 @@ class LogoutError(MemberSuiteAPIError):
 class ExecuteMSQLError(MemberSuiteAPIError):
 
     result_type = "ExecuteMSQLResult"
-
-
-class GetPrimaryMembershipError(MemberSuiteAPIError):
-
-    result_type = "GetPrimaryMembershipResult"

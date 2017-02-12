@@ -1,6 +1,7 @@
+import unittest
+
 from .base import BaseTestCase
-from ..exceptions import GetPrimaryMembershipError
-from ..memberships.services import get_primary_membership, MembershipService
+from ..memberships.services import MembershipService
 from ..memberships.models import Membership, MembershipProduct
 
 
@@ -10,6 +11,7 @@ class MembershipServiceTestCase(BaseTestCase):
         super(MembershipServiceTestCase, self).setUp()
         self.service = MembershipService(self.client)
 
+    @unittest.skip("Need an Organization ID for a non-member org")
     def test_get_membership_for_org(self):
         """
         Get membership info for a test org
@@ -22,6 +24,14 @@ class MembershipServiceTestCase(BaseTestCase):
                          '6faf90e4-0074-cbb5-c1d2-0b3c539859ef')
 
         # Test org without a membership
+
+        # Need an Organization ID for a non-member org. The one here
+        # is the same used above for testing with a member org.
+        #
+        #            HERE!
+        #              |
+        #              |
+        #              V
         test_org_id = "6faf90e4-0007-c9dc-98b7-0b3c53985743"
         membership_list = self.service.get_memberships_for_org(test_org_id)
         self.assertFalse(membership_list)
@@ -44,23 +54,3 @@ class MembershipServiceTestCase(BaseTestCase):
         self.assertTrue(len(membership_product_list) == 103)
         self.assertEqual(type(membership_product_list[0]),
                          MembershipProduct)
-
-
-class GetPrimaryMembershipTestCase(BaseTestCase):
-
-    def test_get_primary_membership_returns_membership(self):
-        organization_id = ""  # AASHE Test Campus
-        entity_id = "6faf90e4-0006-c59d-164a-0b3c5ba7d6d2"  # Test User
-        result = get_primary_membership(organization_id=organization_id,
-                                        entity_id=entity_id,
-                                        client=self.client)
-        self.assertIsInstance(Membership, result)
-
-    def test_get_primary_membership_fails(self):
-        """What happens when get_primary_membership() fails?
-
-        """
-        with self.assertRaises(GetPrimaryMembershipError):
-            get_primary_membership(organization_id="bogus",
-                                   entity_id="bogus",
-                                   client=self.client)
