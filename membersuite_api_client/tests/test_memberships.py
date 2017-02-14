@@ -21,7 +21,7 @@ class MembershipServiceTestCase(BaseTestCase):
                          '6faf90e4-0074-cbb5-c1d2-0b3c539859ef')
 
         # Test org without a membership
-        test_org_id = "6faf90e4-0007-c9dc-98b7-0b3c53985743"
+        test_org_id = "6faf90e4-0007-c92e-8d16-0b3c53985743"
         membership_list = self.service.get_memberships_for_org(test_org_id)
         self.assertFalse(membership_list)
 

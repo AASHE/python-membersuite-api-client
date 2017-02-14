@@ -25,11 +25,9 @@ class Organization(object):
 
         self.org_type = org["Type"]
 
-        self.stars_participant_status = (
-            'STARS participant' if org["STARSCharterParticipant__c"] else ''
-        )
-
         self.primary_email = org['EmailAddress'] or ''
+
+        self.extra_data = org
 
 
 class OrganizationType(object):
@@ -39,7 +37,7 @@ class OrganizationType(object):
         from MemberSuite OrganizationType object
         """
         self.id = org_type["ID"]
-        self.Name = org_type["Name"]
+        self.name = org_type["Name"]
 
 STATUSES = {
     '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
