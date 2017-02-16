@@ -43,6 +43,10 @@ def login_to_portal(username, password, client, retries=2):
 def logout(client):
     """Log out the currently logged-in user.
 
+    There's a really crappy side-effect here - the session_id
+    attribute of the `client` passed in will be reset to None if the
+    logout succeeds, which is going to be almost always, let's hope.
+
     """
     if not client.session_id:
         client.request_session()
@@ -56,5 +60,7 @@ def logout(client):
 
     result = logout_result["body"]["LogoutResult"]
 
-    if result["SessionID"]:  # Will be None if logout succeeded.
+    if result["SessionID"] is None:  # Success!
+        client.session_id = None
+    else:  # Failure . . .
         raise LogoutError(result=result)

@@ -98,6 +98,14 @@ class Individual(MemberSuiteObject):
     def is_member(self, client):
         """Is this Individual a member?
 
+        Assumptions:
+
+          - a "primary organization" in MemberSuite is the "current"
+            Organization for an Individual
+
+          - get_memberships_for_org() returns Memberships ordered such
+            that the first one returned is the "current" one.
+
         """
         if not client.session_id:
             client.request_session()
@@ -119,6 +127,9 @@ class Individual(MemberSuiteObject):
         """Return the primary Organization for this Individual.
 
         """
+        if self.primary_organization__rtg is None:
+            return None
+
         if not client.session_id:
             client.request_session()
 

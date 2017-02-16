@@ -1,3 +1,8 @@
+import os
+
+from .exceptions import ExecuteMSQLError
+
+
 def convert_ms_object(ms_object):
     """
     Converts the list of dictionaries with keys "key" and "value" into
@@ -34,3 +39,55 @@ def membersuite_object_factory(membersuite_object_data):
             membersuite_object_data=membersuite_object_data)
     else:
         return klass(membersuite_object_data=membersuite_object_data)
+
+
+def get_new_client():
+    """Return a new ConciergeClient, pulling secrets from the environment.
+
+    """
+    from .client import ConciergeClient
+    return ConciergeClient(access_key=os.environ["MS_ACCESS_KEY"],
+                           secret_key=os.environ["MS_SECRET_KEY"],
+                           association_id=os.environ["MS_ASSOCIATION_ID"])
+
+
+def submit_msql_query(query, client=None):
+    """Submit `query` to MemberSuite, returning .models.MemberSuiteObjects.
+
+    So this is a converter from MSQL to .models.MemberSuiteObjects.
+
+    Returns query results as a list of MemberSuiteObjects.
+
+    """
+    if client is None:
+        client = get_new_client()
+    if not client.session_id:
+        client.request_session()
+
+    result = client.runSQL(query)
+    execute_msql_result = result["body"]["ExecuteMSQLResult"]
+
+    membersuite_object_list = []
+
+    if execute_msql_result["Success"]:
+        result_value = execute_msql_result["ResultValue"]
+        if result_value["ObjectSearchResult"]["Objects"]:
+            # Multiple results.
+            membersuite_object_list = []
+            for obj in (result_value["ObjectSearchResult"]["Objects"]
+                        ["MemberSuiteObject"]):
+                membersuite_object = membersuite_object_factory(obj)
+                membersuite_object_list.append(membersuite_object)
+        elif result_value["SingleObject"]["ClassType"]:
+            # Only one result.
+            membersuite_object = membersuite_object_factory(
+                execute_msql_result["ResultValue"]["SingleObject"])
+            membersuite_object_list.append(membersuite_object)
+        elif (result_value["ObjectSearchResult"]["Objects"] is None and
+              result_value["SingleObject"]["ClassType"] is None):
+            # No results, I guess.
+            pass
+        return membersuite_object_list
+    else:
+        # @TODO Fix - exposing only the first of possibly many errors here.
+        raise ExecuteMSQLError(result=execute_msql_result)

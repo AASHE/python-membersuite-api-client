@@ -26,5 +26,6 @@ setup(name='membersuite_api_client',
           'Programming Language :: Python :: 3.4.3',
       ],
       include_package_data=True,
-      install_requires=["zeep>=0.26"]
+      install_requires=["future==0.16.0",
+                        "zeep>=0.26"]
       )

@@ -1,16 +1,10 @@
 import os
 import unittest
 
-from ..client import ConciergeClient
 from ..exceptions import LoginToPortalError, MemberSuiteAPIError
 from ..security import models
-from ..security.services import login_to_portal
-
-
-def get_new_client():
-    return ConciergeClient(access_key=os.environ["MS_ACCESS_KEY"],
-                           secret_key=os.environ["MS_SECRET_KEY"],
-                           association_id=os.environ["MS_ASSOCIATION_ID"])
+from ..security.services import login_to_portal, logout
+from ..utils import get_new_client
 
 
 def get_portal_user(client, member=True):
@@ -48,6 +42,22 @@ class SecurityServicesTestCase(unittest.TestCase):
             login_to_portal(username="bo-o-o-gus user ID",
                             password="wrong password",
                             client=self.client)
+
+    def test_logout(self):
+        """Can we logout?
+
+        This logs out from the API client session, not the MemberSuite
+        Portal.
+
+        """
+        self.client.session_id = None
+
+        self.client.request_session()  # A fresh session. Yum!
+        self.assertTrue(self.client.session_id)
+
+        logout(self.client)
+
+        self.assertIsNone(self.client.session_id)
 
 
 class PortalUserTestCase(unittest.TestCase):
