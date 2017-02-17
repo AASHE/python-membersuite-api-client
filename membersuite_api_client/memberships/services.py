@@ -8,6 +8,7 @@ from zeep.exceptions import TransportError
 
 from .models import Membership, MembershipProduct
 from ..utils import convert_ms_object
+import datetime
 
 
 class MembershipService(object):
@@ -52,8 +53,9 @@ class MembershipService(object):
         query = "SELECT Objects() FROM Membership"
         if since_when:
             query += " WHERE LastModifiedDate > '{since_when} 00:00:00'" \
-                     " ORDER BY LocalID"\
-                .format(since_when=since_when.isoformat())
+                     " ORDER BY LocalID".format(
+                        since_when=datetime.date.today() -
+                        datetime.timedelta(days=since_when))
         else:
             query += " ORDER BY LocalID"
 

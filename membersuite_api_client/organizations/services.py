@@ -8,6 +8,7 @@
 from .models import Organization, OrganizationType
 from ..utils import convert_ms_object
 from zeep.exceptions import TransportError
+import datetime
 
 
 class OrganizationService(object):
@@ -41,10 +42,12 @@ class OrganizationService(object):
 
             if since_when:
                 query += " AND LastModifiedDate > '{since_when} 00:00:00'" \
-                    .format(since_when=since_when.isoformat())
+                    .format(since_when=datetime.date.today() -
+                            datetime.timedelta(days=since_when))
         elif since_when and not get_all:
             query += "WHERE LastModifiedDate > '{since_when} 00:00:00'".format(
-                since_when=since_when.isoformat())
+                since_when=datetime.date.today() -
+                datetime.timedelta(days=since_when))
         try:
             result = self.client.runSQL(
                 query=query,
@@ -89,7 +92,7 @@ class OrganizationService(object):
                 )
             return new_results
         else:
-            return None
+            return results
 
     def get_org_types(self):
         """
