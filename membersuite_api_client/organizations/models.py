@@ -8,16 +8,16 @@ class Organization(object):
         self.org_name = org["Name"]
         self.picklist_name = org["SortName"] or ''
 
-        address = org["Mailing_Address"]
-        if address:
-            self.street1 = address["Line1"] or ''
-            self.street2 = address["Line2"] or ''
-            self.city = address["City"] or ''
-            self.state = address["State"] or ''
-            self.country = address["Country"]
-            self.postal_code = address["PostalCode"] or ''
-            self.latitude = address["GeocodeLat"] or ''
-            self.longitude = address["GeocodeLong"] or ''
+        self.address = org["Mailing_Address"]
+        if self.address:
+            self.street1 = self.address["Line1"] or ''
+            self.street2 = self.address["Line2"] or ''
+            self.city = self.address["City"] or ''
+            self.state = self.address["State"] or ''
+            self.country = self.address["Country"]
+            self.postal_code = self.address["PostalCode"] or ''
+            self.latitude = self.address["GeocodeLat"] or ''
+            self.longitude = self.address["GeocodeLong"] or ''
 
         self.website = org["WebSite"] or ''
         self.exclude_from_website = False
