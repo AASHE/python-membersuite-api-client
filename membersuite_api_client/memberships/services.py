@@ -4,10 +4,10 @@
     http://api.docs.membersuite.com/#References/Objects/Membership.htm
 
 """
+from zeep.exceptions import TransportError
 
 from .models import Membership, MembershipProduct
 from ..utils import convert_ms_object
-from zeep.exceptions import TransportError
 
 
 class MembershipService(object):

@@ -1,3 +1,5 @@
+import unittest
+
 from .base import BaseTestCase
 from ..memberships.services import MembershipService
 from ..memberships.models import Membership, MembershipProduct
@@ -9,6 +11,7 @@ class MembershipServiceTestCase(BaseTestCase):
         super(MembershipServiceTestCase, self).setUp()
         self.service = MembershipService(self.client)
 
+    @unittest.skip("Need an Organization ID for a non-member org")
     def test_get_membership_for_org(self):
         """
         Get membership info for a test org

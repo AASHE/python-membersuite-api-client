@@ -16,13 +16,21 @@ class MemberSuiteAPIError(Exception):
             concierge_error=concierge_error)
 
     def get_concierge_error(self):
-        return (self.result["body"][self.result_type]
-                ["Errors"]["ConciergeError"])
+        try:
+            return (self.result["body"][self.result_type]
+                    ["Errors"]["ConciergeError"])
+        except KeyError:
+            return (self.result["Errors"])
 
 
 class LoginToPortalError(MemberSuiteAPIError):
 
     result_type = "LoginToPortalResult"
+
+
+class LogoutError(MemberSuiteAPIError):
+
+    result_type = "LogoutResult"
 
 
 class ExecuteMSQLError(MemberSuiteAPIError):

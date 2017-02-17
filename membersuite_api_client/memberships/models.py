@@ -1,7 +1,7 @@
 class Membership(object):
 
     def __init__(self, membership):
-        """ Create a Membership model from MemberSuite Member object
+        """ Create a Membership model from MemberSuite Membership object
         """
         self.id = membership["ID"]
         self.owner = membership["Owner"]
