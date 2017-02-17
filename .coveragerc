@@ -6,3 +6,4 @@ omit =
     */site-packages/*
     */unittest2/*
     */tests/*
+    *_flymake.py

@@ -67,15 +67,3 @@ class SubmitMSQLQueryTestCase(unittest.TestCase):
                    "WHERE LASTNAME = 'User'"),
             client=client)
         self.assertTrue(len(results))
-
-
-class MemberSuiteAPIErrorTestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        client.request_session()
-
-    def test___str__(self):
-        with self.assertRaises(ExecuteMSQLError):
-            submit_msql_query(query="SELECT OBJECT() FROM BOB",
-                              client=client)
