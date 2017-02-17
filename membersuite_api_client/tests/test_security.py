@@ -7,6 +7,10 @@ from ..security.services import login_to_portal, logout
 from ..utils import get_new_client
 
 
+RETRIES = 5
+DELAY = 1
+
+
 def get_portal_user(client, member=True):
     if client.session_id is None:
         client.request_session()
@@ -14,12 +18,16 @@ def get_portal_user(client, member=True):
         return login_to_portal(
             username=os.environ["TEST_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_MS_PORTAL_USER_PASS"],
-            client=client)
+            client=client,
+            retries=RETRIES,
+            delay=DELAY)
     else:
         return login_to_portal(
             username=os.environ["TEST_NON_MEMBER_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_NON_MEMBER_MS_PORTAL_USER_PASS"],
-            client=client)
+            client=client,
+            retries=RETRIES,
+            delay=DELAY)
 
 
 class SecurityServicesTestCase(unittest.TestCase):
@@ -33,7 +41,9 @@ class SecurityServicesTestCase(unittest.TestCase):
         portal_user = login_to_portal(
             username=os.environ["TEST_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_MS_PORTAL_USER_PASS"],
-            client=self.client)
+            client=self.client,
+            retries=RETRIES,
+            delay=DELAY)
         self.assertIsInstance(portal_user, models.PortalUser)
 
     def test_login_to_portal_failure(self):
@@ -41,7 +51,9 @@ class SecurityServicesTestCase(unittest.TestCase):
         with self.assertRaises(LoginToPortalError):
             login_to_portal(username="bo-o-o-gus user ID",
                             password="wrong password",
-                            client=self.client)
+                            client=self.client,
+                            retries=RETRIES,
+                            delay=DELAY)
 
     def test_logout(self):
         """Can we logout?

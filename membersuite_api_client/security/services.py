@@ -1,15 +1,18 @@
+import time
+
 from .models import PortalUser
 from ..exceptions import LoginToPortalError, LogoutError
 from ..utils import get_session_id
 
 
-def login_to_portal(username, password, client, retries=2):
+def login_to_portal(username, password, client, retries=2, delay=0):
     """Log `username` into the MemberSuite Portal.
 
     Returns a PortalUser object if successful, raises
     LoginToPortalError if not.
 
     Will retry logging in if a GeneralException occurs, up to `retries`.
+    Will pause `delay` seconds between retries.
     """
     if not client.session_id:
         client.request_session()
@@ -20,6 +23,9 @@ def login_to_portal(username, password, client, retries=2):
 
     attempts = 0
     while attempts < retries:
+        if attempts:
+            time.sleep(delay)
+
         result = client.client.service.LoginToPortal(
             _soapheaders=[concierge_request_header],
             portalUserName=username,
