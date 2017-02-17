@@ -76,10 +76,6 @@ class MemberSuiteAPIErrorTestCase(unittest.TestCase):
         client.request_session()
 
     def test___str__(self):
-        try:
+        with self.assertRaises(ExecuteMSQLError):
             submit_msql_query(query="SELECT OBJECT() FROM BOB",
                               client=client)
-        except ExecuteMSQLError as exc:
-            pass
-
-        self.assertTrue(str(exc))
