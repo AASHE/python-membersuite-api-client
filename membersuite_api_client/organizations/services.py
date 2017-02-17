@@ -76,7 +76,7 @@ class OrganizationService(object):
                                                      ) + (results or [])
             # Check if the queryset was completely full. If so, there may be
             # More results we need to query
-            if len(new_results) >= limit_to and depth < max_depth:
+            if len(new_results) >= limit_to and not depth == max_depth:
                 new_results = self.get_orgs(
                     parameters=parameters,
                     get_all=get_all,

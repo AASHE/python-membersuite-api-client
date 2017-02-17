@@ -11,16 +11,16 @@ class Organization(object):
         self.name = self.org_name
         self.picklist_name = org["SortName"] or ''
 
-        address = org["Mailing_Address"]
-        if address:
-            self.street1 = address["Line1"] or ''
-            self.street2 = address["Line2"] or ''
-            self.city = address["City"] or ''
-            self.state = address["State"] or ''
-            self.country = address["Country"]
-            self.postal_code = address["PostalCode"] or ''
-            self.latitude = address["GeocodeLat"] or ''
-            self.longitude = address["GeocodeLong"] or ''
+        self.address = org["Mailing_Address"]
+        if self.address:
+            self.street1 = self.address["Line1"] or ''
+            self.street2 = self.address["Line2"] or ''
+            self.city = self.address["City"] or ''
+            self.state = self.address["State"] or ''
+            self.country = self.address["Country"]
+            self.postal_code = self.address["PostalCode"] or ''
+            self.latitude = self.address["GeocodeLat"] or ''
+            self.longitude = self.address["GeocodeLong"] or ''
 
         self.website = org["WebSite"] or ''
         self.exclude_from_website = False
@@ -28,11 +28,9 @@ class Organization(object):
 
         self.org_type = org["Type"]
 
-        self.stars_participant_status = (
-            'STARS participant' if org["STARSCharterParticipant__c"] else ''
-        )
-
         self.primary_email = org['EmailAddress'] or ''
+
+        self.extra_data = org
 
 
 class OrganizationType(object):
@@ -42,7 +40,7 @@ class OrganizationType(object):
         from MemberSuite OrganizationType object
         """
         self.id = org_type["ID"]
-        self.Name = org_type["Name"]
+        self.name = org_type["Name"]
 
 STATUSES = {
     '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
