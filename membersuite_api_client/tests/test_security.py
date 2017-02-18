@@ -7,8 +7,8 @@ from ..security.services import login_to_portal, logout
 from ..utils import get_new_client
 
 
-RETRIES = 5
-DELAY = 1
+LOGIN_TO_PORTAL_RETRIES = 5
+LOGIN_TO_PORTAL_DELAY = 1
 
 
 def get_portal_user(client, member=True):
@@ -19,15 +19,15 @@ def get_portal_user(client, member=True):
             username=os.environ["TEST_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_MS_PORTAL_USER_PASS"],
             client=client,
-            retries=RETRIES,
-            delay=DELAY)
+            retries=LOGIN_TO_PORTAL_RETRIES,
+            delay=LOGIN_TO_PORTAL_DELAY)
     else:
         return login_to_portal(
             username=os.environ["TEST_NON_MEMBER_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_NON_MEMBER_MS_PORTAL_USER_PASS"],
             client=client,
-            retries=RETRIES,
-            delay=DELAY)
+            retries=LOGIN_TO_PORTAL_RETRIES,
+            delay=LOGIN_TO_PORTAL_DELAY)
 
 
 class SecurityServicesTestCase(unittest.TestCase):
@@ -42,8 +42,8 @@ class SecurityServicesTestCase(unittest.TestCase):
             username=os.environ["TEST_MS_PORTAL_USER_ID"],
             password=os.environ["TEST_MS_PORTAL_USER_PASS"],
             client=self.client,
-            retries=RETRIES,
-            delay=DELAY)
+            retries=LOGIN_TO_PORTAL_RETRIES,
+            delay=LOGIN_TO_PORTAL_DELAY)
         self.assertIsInstance(portal_user, models.PortalUser)
 
     def test_login_to_portal_failure(self):
@@ -52,8 +52,8 @@ class SecurityServicesTestCase(unittest.TestCase):
             login_to_portal(username="bo-o-o-gus user ID",
                             password="wrong password",
                             client=self.client,
-                            retries=RETRIES,
-                            delay=DELAY)
+                            retries=LOGIN_TO_PORTAL_RETRIES,
+                            delay=LOGIN_TO_PORTAL_DELAY)
 
     def test_logout(self):
         """Can we logout?
@@ -141,10 +141,15 @@ class IndividualTestCase(unittest.TestCase):
     def test_get_primary_organization(self):
         """Does get_primary_organization() work?
 
+        Assumptions:
+
+        - self.individual_member has as its primary organization, one
+          named "AASHE Test Campus".
+
         """
         organization = self.individual_member.get_primary_organization(
             client=self.client)
-        self.assertIsInstance(organization, models.Organization)
+        self.assertEqual("AASHE Test Campus", organization.name)
 
     def test_get_primary_organization_fails(self):
         """What happens when get_primary_organization() fails?
