@@ -90,7 +90,7 @@ class MembershipService(object):
 
             # Check if the queryset was completely full. If so, there may be
             # More results we need to query
-            if len(new_results) >= limit_to and depth < max_depth:
+            if len(new_results) >= limit_to and not depth == max_depth:
                 new_results = self.get_all_memberships(
                     since_when=since_when,
                     results=new_results,
