@@ -7,9 +7,9 @@
 
 class Subscription(object):
 
-    def __init__(self, id, org, start, end, extra_data={}):
+    def __init__(self, id, org_id, start, end, extra_data={}):
         self.id = id
-        self.org = org
+        self.org_id = org_id
         self.start = start
         self.end = end
         self.extra_data = extra_data  # all other fields, for reference
