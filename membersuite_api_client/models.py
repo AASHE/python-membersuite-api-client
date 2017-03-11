@@ -16,7 +16,7 @@ class MemberSuiteObject(object):
         self.fields = convert_ms_object(
             membersuite_object_data["Fields"]["KeyValueOfstringanyType"])
 
-        self.id = self.fields["ID"]
+        self.membersuite_id = self.fields["ID"]
         self.extra_data = membersuite_object_data
 
     def __str__(self):

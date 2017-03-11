@@ -85,7 +85,7 @@ class PortalUserTestCase(unittest.TestCase):
         """Does get_username() work?
 
         """
-        self.portal_user.id = "fake-membersuite-id"
+        self.portal_user.membersuite_id = "fake-membersuite-id"
         self.assertEqual("_membersuite_id_fake-membersuite-id",
                          self.portal_user.get_username())
 
@@ -96,7 +96,7 @@ class PortalUserTestCase(unittest.TestCase):
         individual = self.portal_user.get_individual(client=self.client)
         self.assertEqual(self.portal_user.first_name, individual.first_name)
         self.assertEqual(self.portal_user.last_name, individual.last_name)
-        self.assertEqual(self.portal_user.owner, individual.id)
+        self.assertEqual(self.portal_user.owner, individual.membersuite_id)
 
 
 class IndividualTestCase(unittest.TestCase):

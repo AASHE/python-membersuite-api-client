@@ -30,7 +30,7 @@ class PortalUser(MemberSuiteObject):
         return ("<PortalUser: ID: {id}, email_address: {email_address}, "
                 "first_name: {first_name}, last_name: {last_name}, "
                 "owner: {owner}, session_id: {session_id}>".format(
-                    id=self.id,
+                    id=self.membersuite_id,
                     email_address=self.email_address,
                     first_name=self.first_name,
                     last_name=self.last_name,
@@ -41,7 +41,7 @@ class PortalUser(MemberSuiteObject):
         """Return a username suitable for storing in auth.User.username.
 
         """
-        return "_membersuite_id_{}".format(self.id)
+        return "_membersuite_id_{}".format(self.membersuite_id)
 
     def get_individual(self, client):
         """Return the Individual that owns this PortalUser.
@@ -90,7 +90,7 @@ class Individual(MemberSuiteObject):
     def __str__(self):
         return ("<Individual: ID: {id}, email_address: {email_address}, "
                 "first_name: {first_name}, last_name: {last_name}>".format(
-                    id=self.id,
+                    id=self.membersuite_id,
                     email_address=self.email_address,
                     first_name=self.first_name,
                     last_name=self.last_name))
