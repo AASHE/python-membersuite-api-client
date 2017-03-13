@@ -37,11 +37,31 @@ class PortalUser(MemberSuiteObject):
                     owner=self.owner,
                     session_id=self.session_id))
 
-    def get_username(self):
+    def generate_username(self):
         """Return a username suitable for storing in auth.User.username.
 
+        Has to be <= 30 characters long.  (Until we drop support for
+        Django 1.4, after which we can define a custom User model with
+        a larger username field.)
+
+        We want to incorporate the membersuite_id in the username.
+        Those look like this:
+
+            00000000-0032-c842-a28a-0b3c8b856f80
+
+        That's 36 characters, too long for username.  Making the
+        assumption that those leading zeroes will always be there in
+        every ID.  Since they're not needed to generate a unique
+        value, they can go.
+
+        After chomping the zeroes, we're at 27 characters, so we
+        insert "ms-" in the front.
+
         """
-        return "_membersuite_id_{}".format(self.membersuite_id)
+        assert self.membersuite_id.startswith("00000000-")
+        username = self.membersuite_id.replace("00000000-", '')
+        username = "ms-" + username
+        return username
 
     def get_individual(self, client):
         """Return the Individual that owns this PortalUser.
