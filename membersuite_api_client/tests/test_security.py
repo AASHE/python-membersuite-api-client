@@ -81,13 +81,13 @@ class PortalUserTestCase(unittest.TestCase):
     def setUp(self):
         self.portal_user = get_portal_user(client=self.client)
 
-    def test_get_username(self):
-        """Does get_username() work?
+    def test_generate_username(self):
+        """Does generate_username() work?
 
         """
-        self.portal_user.membersuite_id = "fake-membersuite-id"
-        self.assertEqual("_membersuite_id_fake-membersuite-id",
-                         self.portal_user.get_username())
+        self.portal_user.membersuite_id = "00000000-fake-membersuite-id"
+        self.assertEqual("ms-fake-membersuite-id",
+                         self.portal_user.generate_username())
 
     def test_get_individual(self):
         """Does get_individual() work?
