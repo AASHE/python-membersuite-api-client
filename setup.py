@@ -9,7 +9,7 @@ def read(fname):
 
 
 setup(name='membersuite_api_client',
-      version='0.1.8',
+      version='0.1.9',
       description='MemberSuite API Client',
       author='AASHE',
       author_email='webdev@aashe.org',
@@ -23,7 +23,7 @@ setup(name='membersuite_api_client',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: BSD License',
           'Operating System :: OS Independent',
-          'Programming Language :: Python :: 3.4.3',
+          'Programming Language :: Python :: 3.4',
       ],
       include_package_data=True,
       install_requires=["future==0.16.0",
