@@ -25,3 +25,7 @@ class MemberSuiteAPIErrorTestCase(unittest.TestCase):
 
     def test___str__(self):
         self.assertTrue(str(self.exc) > '')
+
+
+if __name__ == '__main__':
+    unittest.main()

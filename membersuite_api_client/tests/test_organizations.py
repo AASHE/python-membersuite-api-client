@@ -1,3 +1,5 @@
+import unittest
+
 from .base import BaseTestCase
 from ..organizations.services import OrganizationService
 from ..organizations.models import Organization, OrganizationType
@@ -29,6 +31,13 @@ class OrganizationServiceTestCase(BaseTestCase):
         self.assertEqual(len(org_list), 2)
         self.assertEqual(type(org_list[0]), Organization)
 
+        # How does recursion handle the end?
+        # 8055 records at the time of this test
+        org_list = self.service.get_orgs(
+            get_all=True, start_record=8000, limit_to=10)
+        self.assertGreater(len(org_list), 50)
+        self.assertEqual(type(org_list[0]), Organization)
+
     def test_get_org_types(self):
         """
         Test fetching all org type objects
@@ -36,3 +45,7 @@ class OrganizationServiceTestCase(BaseTestCase):
         org_type_list = self.service.get_org_types()
         self.assertTrue(len(org_type_list))
         self.assertTrue(type(org_type_list[0]), OrganizationType)
+
+
+if __name__ == '__main__':
+    unittest.main()

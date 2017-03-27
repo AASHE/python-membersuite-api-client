@@ -159,3 +159,7 @@ class IndividualTestCase(unittest.TestCase):
             self.individual_member.primary_organization__rtg = "bogus ID"
             self.individual_member.get_primary_organization(
                 client=self.client)
+
+
+if __name__ == '__main__':
+    unittest.main()

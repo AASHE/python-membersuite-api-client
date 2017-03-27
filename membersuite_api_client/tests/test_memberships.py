@@ -46,3 +46,7 @@ class MembershipServiceTestCase(BaseTestCase):
         self.assertTrue(len(membership_product_list) == 103)
         self.assertEqual(type(membership_product_list[0]),
                          MembershipProduct)
+
+
+if __name__ == '__main__':
+    unittest.main()
