@@ -23,25 +23,23 @@ generated somewhere secure (they cannot be retrieved later if lost)
 
 ## Usage
 
-Create your client instance by invoking "client = ConciergeClient()".
+    from membersuite_api_client.client import ConciergeClient
 
-To authenticate and receive a session ID, call client.request_session().
+    client = ConciergeClient(
+        access_key=MS_ACCESS_KEY,
+        secret_key=MS_SECRET_KEY,
+        association_id=MS_ASSOCIATION_ID)
 
-This returns the session ID value when called, or this can be retrieved as an
-attribute client.session_id.
+To authenticate and receive a session ID:
 
-This can now be used to make additional calls using the methods included in
-the WSDL from MemberSuite. For documentation on available methods and their
-usage, see http://api.docs.membersuite.com/
+    client.request_session()
+    print client.session_id
 
-Use request_session() as a model for constructing the headers for
-your own functions in your app that follow this method:
+To take advantage of a service, for example `subscriptions`:
 
-    1) Call client.construct_concierge_header(url) to generate a new header element, using your method's URL as an argument.
-    2) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
-    3) Return any relevant data out of the response object
-
-***IMPORTANT NOTE: In constructing headers, SessionId must appear first.***
+    ORG_ID = #####
+    service = SubscriptionService(self.client)
+    subscription_list = service.get_subscriptions(org_id=ORG_ID)
 
 ## Running tests
 
@@ -56,7 +54,7 @@ To run specific tests, load them by module. For example:
 ## Contributing and Extending
 
 Looking to contribute? The best place to start is in the code base. Notice how
-we created modules for each MemberSuite objects, like `organizations`.
+we created modules for each MemberSuite object, like `organizations`.
 
 Each module contains `services.py` and `models.py` files.
 
@@ -67,3 +65,18 @@ where objects are retrieved from MemberSuite and converted to your models for
 use in a python app. It is recommended that the services be classes and if
 you define `result_to_models` and `ms_object_to_model` methods on the class
 you can use the ChunkQueryMixin to make large queries.
+
+### Nuance
+
+This can now be used to make additional calls using the methods included in
+the WSDL from MemberSuite. For documentation on available methods and their
+usage, see http://api.docs.membersuite.com/
+
+Use request_session() as a model for constructing the headers for
+your own functions in your app that follow this method:
+
+    1) Call client.construct_concierge_header(url) to generate a new header element, using your method's URL as an argument.
+    2) Call client.service.method_name(_soapheaders=[concierge_request_header], method arguments)
+    3) Return any relevant data out of the response object
+
+***IMPORTANT NOTE: In constructing headers, SessionId must appear first.***

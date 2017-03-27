@@ -41,7 +41,7 @@ class ChunkQueryMixin():
         call_count = 1
         """
         continue to run queries as long as we
-            - don't excede the call call_count
+            - don't exceed the call call_count
             - don't see results that are less than the limited length (the end)
         """
         while (
