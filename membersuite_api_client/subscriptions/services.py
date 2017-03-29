@@ -44,35 +44,12 @@ class SubscriptionService(ChunkQueryMixin, object):
 
         # note, get_long_query is overkill when just looking at
         # one org, but it still only executes once
-        # `get_long_query` uses `result_to_models` to return Subscriptions
+        # `get_long_query` uses `ms_object_to_model` to return Subscriptions
         subscription_list = self.get_long_query(
             query, retry_attempts=retry_attempts, limit_to=limit_to,
             max_calls=max_calls)
 
         return subscription_list
-
-    def result_to_models(self, result):
-        """
-        this is the 'transorm' part of ETL:
-            converts the result of the SQL to Subscription objects
-        """
-        mysql_result = result['body']['ExecuteMSQLResult']
-
-        if not mysql_result['Errors']:
-            obj_result = mysql_result['ResultValue']['ObjectSearchResult']
-            if not obj_result['Objects']:
-                return []
-            objects = obj_result['Objects']['MemberSuiteObject']
-
-            subscription_list = []
-            for obj in objects:
-                subscription = self.ms_object_to_model(obj)
-                subscription_list.append(subscription)
-
-            return subscription_list
-
-        else:
-            raise ExecuteMSQLError(result)
 
     def ms_object_to_model(self, ms_obj):
         " Converts an individual result to a Subscription Model "

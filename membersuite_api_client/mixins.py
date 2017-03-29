@@ -1,4 +1,7 @@
 from retrying import retry
+import datetime
+
+RETRY_ATTEMPTS = 10
 
 
 class ChunkQueryMixin():
@@ -15,28 +18,41 @@ class ChunkQueryMixin():
     """
 
     def get_long_query(
-            self, base_query, retry_attempts=2, limit_to=200, max_calls=None):
+            self, base_query, limit_to=100, max_calls=None,
+            start_record=0, verbose=False):
         """
         Takes a base query for all objects and recursively requests them
 
-        @base_query - the base query to be executed
-        @retry_attempts - the number of times to retry a query when it fails
-        @limit_to - how many rows to query for in each chunk
-        @max_recursion_depth - None is infinite
+        :param str base_query: the base query to be executed
+        :param int limit_to: how many rows to query for in each chunk
+        :param int max_calls: the max calls(chunks to request) None is infinite
+        :param int start_record: the first record to return from the query
+        :param bool verbose: print progress to stdout
+        :return: a list of Organization objects
         """
 
-        @retry(stop_max_attempt_number=retry_attempts)
-        def run_query(base_query, start_record, limit_to):
+        @retry(stop_max_attempt_number=RETRY_ATTEMPTS, wait_fixed=2000)
+        def run_query(base_query, start_record, limit_to, verbose):
             # inline method to take advantage of retry
+
+            if verbose:
+                print "[start: %d limit: %d]" % (start_record, limit_to)
+            start = datetime.datetime.now()
             result = self.client.runSQL(
                 query=base_query,
                 start_record=start_record,
                 limit_to=limit_to,
             )
+            end = datetime.datetime.now()
+            if verbose:
+                print "[%s - %s]" % (start, end)
             return self.result_to_models(result)
 
-        record_index = 0
-        result = run_query(base_query, record_index, limit_to)
+        if verbose:
+            print base_query
+
+        record_index = start_record
+        result = run_query(base_query, record_index, limit_to, verbose)
         all_objects = result
         call_count = 1
         """
@@ -49,7 +65,32 @@ class ChunkQueryMixin():
                 len(result) >= limit_to):
 
             record_index += len(result)  # should be `limit_to`
-            all_objects += run_query(base_query, record_index, limit_to)
+            result = run_query(
+                base_query, record_index, limit_to, verbose)
+            all_objects += result
             call_count += 1
 
         return all_objects
+
+    def result_to_models(self, result):
+        """
+            this is the 'transorm' part of ETL:
+            converts the result of the SQL to Models
+        """
+        mysql_result = result['body']['ExecuteMSQLResult']
+
+        if not mysql_result['Errors']:
+            obj_result = mysql_result['ResultValue']['ObjectSearchResult']
+            if not obj_result['Objects']:
+                return []
+            objects = obj_result['Objects']['MemberSuiteObject']
+
+            model_list = []
+            for obj in objects:
+                model = self.ms_object_to_model(obj)
+                model_list.append(model)
+
+            return model_list
+
+        else:
+            raise ExecuteMSQLError(result)

@@ -19,23 +19,22 @@ class OrganizationServiceTestCase(BaseTestCase):
         parameters = {
             'Name': 'AASHE Test Campus',
         }
-        org_list = self.service.get_orgs(parameters)
+        org_list = self.service.get_orgs(parameters=parameters)
         self.assertEqual(len(org_list), 1)
         self.assertEqual(type(org_list[0]), Organization)
 
+        # @todo - test since_when parameter
+
         # Fetch all orgs using get_all=True
         # But limit to 1 result per iteration, 2 iterations
-        org_list = self.service.get_orgs(get_all=True,
-                                         limit_to=1,
-                                         max_depth=2)
+        org_list = self.service.get_orgs(limit_to=1, max_calls=2)
         self.assertEqual(len(org_list), 2)
         self.assertEqual(type(org_list[0]), Organization)
 
         # How does recursion handle the end?
         # 8055 records at the time of this test
-        org_list = self.service.get_orgs(
-            get_all=True, start_record=8000, limit_to=10)
-        self.assertGreater(len(org_list), 50)
+        org_list = self.service.get_orgs(start_record=8050, limit_to=1)
+        self.assertGreater(len(org_list), 4)
         self.assertEqual(type(org_list[0]), Organization)
 
     def test_get_org_types(self):
