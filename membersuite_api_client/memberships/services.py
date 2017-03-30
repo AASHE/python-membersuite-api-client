@@ -83,7 +83,16 @@ class MembershipService(ChunkQueryMixin, object):
             ms_obj['Fields']['KeyValueOfstringanyType'])
         return Membership(sane_obj)
 
-    def get_all_membership_products(self):
+
+class MembershipProductService(ChunkQueryMixin, object):
+
+    def __init__(self, client):
+        """
+        Accepts a ConciergeClient to connect with MemberSuite
+        """
+        self.client = client
+
+    def get_all_membership_products(self, verbose):
         """
         Retrieves membership product objects
         """
@@ -91,25 +100,12 @@ class MembershipService(ChunkQueryMixin, object):
             self.client.request_session()
 
         query = "SELECT Objects() FROM MembershipDuesProduct"
-        result = self.client.runSQL(query)
-        msql_result = result['body']['ExecuteMSQLResult']
-        if not msql_result['Errors']:
-            return self.package_membership_products(msql_result)
-        else:
-            return None
 
-    def package_membership_products(self, msql_result):
-        """
-        Loops through MS objects returned from queries to turn them into
-        MembershipProduct objects and pack them into a list for later use.
-        """
-        obj_result = msql_result['ResultValue']['ObjectSearchResult']
-        objects = obj_result['Objects']['MemberSuiteObject']
-        product_list = []
-        for obj in objects:
-            sane_obj = convert_ms_object(
-                obj['Fields']['KeyValueOfstringanyType']
-            )
-            product = MembershipProduct(sane_obj)
-            product_list.append(product)
-        return product_list
+        membership_product_list = self.get_long_query(query, verbose=verbose)
+        return membership_product_list
+
+    def ms_object_to_model(self, ms_obj):
+        " Converts an individual result to a Subscription Model "
+        sane_obj = convert_ms_object(
+            ms_obj['Fields']['KeyValueOfstringanyType'])
+        return MembershipProduct(sane_obj)
