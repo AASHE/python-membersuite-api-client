@@ -59,8 +59,7 @@ class OrganizationService(ChunkQueryMixin, object):
                 ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
 
         if verbose:
-            print "Fetching Organizations..."
-            print query
+            print("Fetching Organizations...")
 
         # note, get_long_query is overkill when just looking at
         # one org, but it still only executes once

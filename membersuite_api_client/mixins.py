@@ -38,7 +38,7 @@ class ChunkQueryMixin():
             # inline method to take advantage of retry
 
             if verbose:
-                print "[start: %d limit: %d]" % (start_record, limit_to)
+                print("[start: %d limit: %d]" % (start_record, limit_to))
             start = datetime.datetime.now()
             result = self.client.runSQL(
                 query=base_query,
@@ -47,11 +47,11 @@ class ChunkQueryMixin():
             )
             end = datetime.datetime.now()
             if verbose:
-                print "[%s - %s]" % (start, end)
+                print("[%s - %s]" % (start, end))
             return self.result_to_models(result)
 
         if verbose:
-            print base_query
+            print(base_query)
 
         record_index = start_record
         result = run_query(base_query, record_index, limit_to, verbose)
