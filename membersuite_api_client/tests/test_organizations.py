@@ -4,6 +4,9 @@ from .base import BaseTestCase
 from ..organizations.services import OrganizationService
 from ..organizations.models import Organization, OrganizationType
 
+# @todo - this should come from the env for portability
+TEST_ORG_NAME = 'AASHE'
+
 
 class OrganizationServiceTestCase(BaseTestCase):
 
@@ -17,9 +20,9 @@ class OrganizationServiceTestCase(BaseTestCase):
         """
         # Fetch just one org by name
         parameters = {
-            'Name': 'AASHE Test Campus',
+            'Name': "'%s'" % TEST_ORG_NAME,
         }
-        org_list = self.service.get_orgs(parameters=parameters)
+        org_list = self.service.get_orgs(parameters=parameters, verbose=True)
         self.assertEqual(len(org_list), 1)
         self.assertEqual(type(org_list[0]), Organization)
 
@@ -27,14 +30,15 @@ class OrganizationServiceTestCase(BaseTestCase):
 
         # Fetch all orgs using get_all=True
         # But limit to 1 result per iteration, 2 iterations
-        org_list = self.service.get_orgs(limit_to=1, max_calls=2)
+        org_list = self.service.get_orgs(limit_to=1, max_calls=2, verbose=True)
         self.assertEqual(len(org_list), 2)
         self.assertEqual(type(org_list[0]), Organization)
 
         # How does recursion handle the end?
         # 8055 records at the time of this test
-        org_list = self.service.get_orgs(start_record=8050, limit_to=1)
-        self.assertGreater(len(org_list), 4)
+        org_list = self.service.get_orgs(
+            start_record=8000, limit_to=10, verbose=True)
+        self.assertGreater(len(org_list), 1)
         self.assertEqual(type(org_list[0]), Organization)
 
     def test_get_org_types(self):
