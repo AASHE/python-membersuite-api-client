@@ -1,6 +1,8 @@
 from retrying import retry
 import datetime
 
+from .exceptions import ExecuteMSQLError
+
 RETRY_ATTEMPTS = 10
 
 
