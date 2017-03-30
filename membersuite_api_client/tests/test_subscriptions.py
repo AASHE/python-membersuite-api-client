@@ -1,12 +1,13 @@
 import unittest
+import os
 
 from .base import BaseTestCase
 from ..subscriptions.services import SubscriptionService
 from ..subscriptions.models import Subscription
 
 # @todo - these should go in the env to be portable across associations
-TEST_SUBSCRIPTION_OWNER = '6faf90e4-0006-cd5b-0ec7-0b3ca00fae56'
-TEST_PUBLICATION_ID = '6faf90e4-009e-cb9b-7c9e-0b3bcd6dff6a'
+TEST_SUBSCRIPTION_OWNER = os.environ.get('TEST_ORG_ID_SUBSCRIBER')
+TEST_PUBLICATION_ID = os.environ.get('TEST_PUBLICATION_ID')
 
 
 class SubscriptionTestCase(BaseTestCase):

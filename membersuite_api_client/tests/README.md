@@ -23,5 +23,8 @@ Until we set up a mechanism for fixtures, you'll need to set up the following:
 
 ## Security vars:
 
- - `TEST_MS_PORTAL_USER_ID` - a user with portal access
- - `TEST_MS_PORTAL_USER_PASS` - that user's password
+- `TEST_MS_PORTAL_MEMBER_ID` - member user with portal access
+- `TEST_MS_PORTAL_MEMBER_PASS` - password
+- `TEST_MS_PORTAL_NONMEMBER_ID` - nonmember with portal access
+- `TEST_MS_PORTAL_NONMEMBER_PASS` - password
+- `TEST_MS_MEMBER_ORG_NAME` - the name of the member organization
