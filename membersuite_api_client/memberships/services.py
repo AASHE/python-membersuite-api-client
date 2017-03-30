@@ -92,7 +92,7 @@ class MembershipProductService(ChunkQueryMixin, object):
         """
         self.client = client
 
-    def get_all_membership_products(self, verbose):
+    def get_all_membership_products(self, verbose=False):
         """
         Retrieves membership product objects
         """
