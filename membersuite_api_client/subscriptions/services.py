@@ -27,27 +27,37 @@ class SubscriptionService(ChunkQueryMixin, object):
 
     def get_subscriptions(
             self, publication_id=None, org_id=None, since_when=None,
-            retry_attempts=2, limit_to=200, max_calls=None):
+            limit_to=200, max_calls=None, start_record=0, verbose=False):
         """
         Fetches all subscriptions from Membersuite of a particular
         `publication_id` if set.
         """
         query = "SELECT Objects() FROM Subscription"
+
+        # collect all where parameters into a list of
+        # (key, operator, value) tuples
+        where_params = []
+
         if org_id:
-            query += " WHERE owner = '%s'" % org_id
+            where_params.append(('owner', '=', "'%s'" % org_id))
         if publication_id:
-            query += " AND publication = '%s'" % publication_id
+            where_params.append(('publication', '=', "'%s'" % publication_id))
         if since_when:
-            query += " AND LastModifiedDate > '{since_when} 00:00:00'" \
-                .format(since_when=datetime.date.today() -
-                        datetime.timedelta(days=since_when))
+            d = datetime.date.today() - datetime.timedelta(days=since_when)
+            where_params.append(
+                ('LastModifiedDate', ">", "'%s 00:00:00'" % d))
+
+        if where_params:
+            query += " WHERE "
+            query += " AND ".join(
+                ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
 
         # note, get_long_query is overkill when just looking at
         # one org, but it still only executes once
         # `get_long_query` uses `ms_object_to_model` to return Subscriptions
         subscription_list = self.get_long_query(
-            query, retry_attempts=retry_attempts, limit_to=limit_to,
-            max_calls=max_calls)
+            query, limit_to=limit_to, max_calls=max_calls,
+            start_record=start_record, verbose=verbose)
 
         return subscription_list
 

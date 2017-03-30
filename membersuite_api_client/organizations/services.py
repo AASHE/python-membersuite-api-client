@@ -38,24 +38,33 @@ class OrganizationService(ChunkQueryMixin, object):
         if not self.client.session_id:
             self.client.request_session()
 
-        query = "SELECT Objects() FROM Organization "
+        query = "SELECT Objects() FROM Organization"
+
+        # collect all where parameters into a list of
+        # (key, operator, value) tuples
+        where_params = []
+
         if parameters:
-            query += "WHERE"
-            for key, value in parameters.items():
-                query += " %s = '%s' AND" % (key, value)
-            query = query[:-4]
+            for k, v in parameters.items():
+                where_params.append((k, "=", v))
 
         if since_when:
-            query += " AND LastModifiedDate > '{since_when} 00:00:00'" \
-                .format(since_when=datetime.date.today() -
-                        datetime.timedelta(days=since_when))
+            d = datetime.date.today() - datetime.timedelta(days=since_when)
+            where_params.append(
+                ('LastModifiedDate', ">", "'%s 00:00:00'" % d))
+
+        if where_params:
+            query += " WHERE "
+            query += " AND ".join(
+                ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
 
         if verbose:
             print "Fetching Organizations..."
+            print query
 
         # note, get_long_query is overkill when just looking at
         # one org, but it still only executes once
-        # `get_long_query` uses `ms_object_to_model` to return Subscriptions
+        # `get_long_query` uses `ms_object_to_model` to return Organizations
         org_list = self.get_long_query(
             query, limit_to=limit_to, max_calls=max_calls,
             start_record=start_record, verbose=verbose)
@@ -63,7 +72,7 @@ class OrganizationService(ChunkQueryMixin, object):
         return org_list
 
     def ms_object_to_model(self, ms_obj):
-        " Converts an individual result to a Subscription Model "
+        " Converts an individual result to an Organization Model "
         sane_obj = convert_ms_object(
             ms_obj['Fields']['KeyValueOfstringanyType'])
         return Organization(sane_obj)
