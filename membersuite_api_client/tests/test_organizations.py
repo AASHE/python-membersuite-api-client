@@ -6,7 +6,7 @@ from ..organizations.services import OrganizationService
 from ..organizations.models import Organization, OrganizationType
 
 # @todo - this should come from the env for portability
-TEST_ORG_NAME = os.environ.get('TEST_ORG_ID')
+TEST_ORG_NAME = os.environ.get('TEST_ORG_NAME')
 
 
 class OrganizationServiceTestCase(BaseTestCase):
