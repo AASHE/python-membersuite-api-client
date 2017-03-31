@@ -14,6 +14,8 @@ MEMBER_PASSWORD = os.environ.get('TEST_MS_PORTAL_MEMBER_PASS')
 NONMEMBER_ID = os.environ.get('TEST_MS_PORTAL_NONMEMBER_ID')
 NONMEMBER_PASSWORD = os.environ.get('TEST_MS_PORTAL_NONMEMBER_PASS')
 MEMBER_ORG_NAME = os.environ.get('TEST_MS_MEMBER_ORG_NAME')
+print("**************")
+print("MEMBER_ORG_NAME: %" % MEMBER_ORG_NAME)
 
 
 def get_portal_user(client, member=True):
