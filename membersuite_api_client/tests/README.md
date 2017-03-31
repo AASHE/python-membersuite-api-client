@@ -14,7 +14,7 @@ Until we set up a mechanism for fixtures, you'll need to set up the following:
 
 ## Organization vars:
 
- - `TEST_ORG_ID` - an existing org
+ - `TEST_ORG_NAME` - an existing org's name
 
 ## Membership vars:
 
