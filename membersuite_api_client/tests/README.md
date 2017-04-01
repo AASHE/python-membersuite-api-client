@@ -28,3 +28,8 @@ Until we set up a mechanism for fixtures, you'll need to set up the following:
 - `TEST_MS_PORTAL_NONMEMBER_ID` - nonmember with portal access
 - `TEST_MS_PORTAL_NONMEMBER_PASS` - password
 - `TEST_MS_MEMBER_ORG_NAME` - the name of the member organization
+
+## Subscription vars:
+
+ - `TEST_ORG_ID_SUBSCRIBER` - org that has subscriptions
+ - `TEST_PUBLICATION_ID` - a publication for the subscription above
