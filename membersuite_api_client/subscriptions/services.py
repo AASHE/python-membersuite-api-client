@@ -65,10 +65,11 @@ class SubscriptionService(ChunkQueryMixin, object):
         " Converts an individual result to a Subscription Model "
         sane_obj = convert_ms_object(
             ms_obj['Fields']['KeyValueOfstringanyType'])
+        import pdb; pdb.set_trace()
         subscription = Subscription(
             id=sane_obj['ID'],
             org_id=sane_obj['Owner'],
             start=sane_obj['StartDate'],
-            end=sane_obj['TerminationDate'],
+            end=sane_obj['ExpirationDate'],
             extra_data=sane_obj)
         return subscription
