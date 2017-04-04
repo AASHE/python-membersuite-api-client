@@ -5,13 +5,14 @@
 
 """
 
+from ..mixins import ChunkQueryMixin
 from .models import Organization, OrganizationType
 from ..utils import convert_ms_object
 from zeep.exceptions import TransportError
 import datetime
 
 
-class OrganizationService(object):
+class OrganizationService(ChunkQueryMixin, object):
 
     def __init__(self, client):
         """
@@ -19,80 +20,61 @@ class OrganizationService(object):
         """
         self.client = client
 
-    def get_orgs(self, parameters=None, get_all=False, since_when=None,
-                 results=None, start_record=0, limit_to=200, depth=1,
-                 max_depth=None):
+    def get_orgs(
+            self, limit_to=100, max_calls=None, parameters=None,
+            since_when=None, start_record=0, verbose=False):
         """
-        Constructs request to MemberSuite to query organization objects
-        based on parameters provided.
+        Constructs request to MemberSuite to query organization objects.
 
-        Loop over queries of size limit_to until either a non-full queryset
-        is returned, or max_depth is reached (used in tests). Then the
-        recursion collapses to return a single concatenated list.
+        :param int limit_to: number of records to fetch with each chunk
+        :param int max_calls: the maximum number of calls (chunks) to request
+        :param str parameters: additional query parameter dictionary
+        :param date since_when: fetch records modified after this date
+        :param int start_record: the first record to return from the query
+        :param bool verbose: print progress to stdout
+        :return: a list of Organization objects
         """
+
         if not self.client.session_id:
             self.client.request_session()
 
-        query = "SELECT Objects() FROM Organization "
-        if parameters and not get_all:
-            query += "WHERE"
-            for key in parameters:
-                query += " %s = '%s' AND" % (key, parameters[key])
-            query = query[:-4]
+        query = "SELECT Objects() FROM Organization"
 
-            if since_when:
-                query += " AND LastModifiedDate > '{since_when} 00:00:00'" \
-                    .format(since_when=datetime.date.today() -
-                            datetime.timedelta(days=since_when))
-        elif since_when and not get_all:
-            query += "WHERE LastModifiedDate > '{since_when} 00:00:00'".format(
-                since_when=datetime.date.today() -
-                datetime.timedelta(days=since_when))
-        try:
-            result = self.client.runSQL(
-                query=query,
-                start_record=start_record,
-                limit_to=limit_to,
-            )
+        # collect all where parameters into a list of
+        # (key, operator, value) tuples
+        where_params = []
 
-        except TransportError:
-            # API Intermittently fails and kicks a 504,
-            # this is a way to retry if that happens.
-            result = self.get_orgs(
-                parameters=parameters,
-                get_all=get_all,
-                since_when=since_when,
-                results=results,
-                start_record=start_record,
-                limit_to=limit_to,
-                depth=depth,
-                max_depth=max_depth,
-            )
+        if parameters:
+            for k, v in parameters.items():
+                where_params.append((k, "=", v))
 
-        msql_result = result['body']["ExecuteMSQLResult"]
-        if not msql_result['Errors'] and \
-                msql_result["ResultValue"]["ObjectSearchResult"]["Objects"]:
-            new_results = self.package_organizations(msql_result["ResultValue"]
-                                                     ["ObjectSearchResult"]
-                                                     ["Objects"]
-                                                     ["MemberSuiteObject"]
-                                                     ) + (results or [])
-            # Check if the queryset was completely full. If so, there may be
-            # More results we need to query
-            if len(new_results) >= limit_to and not depth == max_depth:
-                new_results = self.get_orgs(
-                    parameters=parameters,
-                    get_all=get_all,
-                    since_when=since_when,
-                    results=new_results,
-                    start_record=start_record + limit_to,
-                    limit_to=limit_to,
-                    depth=depth + 1,
-                    max_depth=max_depth
-                )
-            return new_results
-        else:
-            return results
+        if since_when:
+            d = datetime.date.today() - datetime.timedelta(days=since_when)
+            where_params.append(
+                ('LastModifiedDate', ">", "'%s 00:00:00'" % d))
+
+        if where_params:
+            query += " WHERE "
+            query += " AND ".join(
+                ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
+
+        if verbose:
+            print("Fetching Organizations...")
+
+        # note, get_long_query is overkill when just looking at
+        # one org, but it still only executes once
+        # `get_long_query` uses `ms_object_to_model` to return Organizations
+        org_list = self.get_long_query(
+            query, limit_to=limit_to, max_calls=max_calls,
+            start_record=start_record, verbose=verbose)
+
+        return org_list
+
+    def ms_object_to_model(self, ms_obj):
+        " Converts an individual result to an Organization Model "
+        sane_obj = convert_ms_object(
+            ms_obj['Fields']['KeyValueOfstringanyType'])
+        return Organization(sane_obj)
 
     def get_org_types(self):
         """
@@ -108,20 +90,6 @@ class OrganizationService(object):
                                       ["ObjectSearchResult"]
                                       ["Objects"]["MemberSuiteObject"]
                                       )
-
-    def package_organizations(self, obj_list):
-        """
-        Loops through MS objects returned from queries to turn them into
-        Organization objects and pack them into a list for later use.
-        """
-        org_list = []
-        for obj in obj_list:
-            sane_obj = convert_ms_object(
-                obj['Fields']['KeyValueOfstringanyType']
-            )
-            org = Organization(sane_obj)
-            org_list.append(org)
-        return org_list
 
     def package_org_types(self, obj_list):
         """

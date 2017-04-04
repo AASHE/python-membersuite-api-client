@@ -1,7 +1,13 @@
 import unittest
+import os
 
 from .base import BaseTestCase
 from ..subscriptions.services import SubscriptionService
+from ..subscriptions.models import Subscription
+
+# @todo - these should go in the env to be portable across associations
+TEST_SUBSCRIPTION_OWNER = os.environ.get('TEST_ORG_ID_SUBSCRIBER')
+TEST_PUBLICATION_ID = os.environ.get('TEST_PUBLICATION_ID')
 
 
 class SubscriptionTestCase(BaseTestCase):
@@ -14,27 +20,32 @@ class SubscriptionTestCase(BaseTestCase):
         """
         Get the all subscriptions for an organization
         """
-
-        test_org_id = "6faf90e4-0007-cbaa-6232-0b3c7fa70db7"
-        subscription_list = self.service.get_subscriptions(org_id=test_org_id)
+        subscription_list = self.service.get_subscriptions(
+            org_id=TEST_SUBSCRIPTION_OWNER, verbose=True)
         self.assertGreaterEqual(len(subscription_list), 2)
+        self.assertEqual(type(subscription_list[0]), Subscription)
 
         # with publication_id
-        STARS_PUBLICATION_ID = '6faf90e4-009e-cb9b-7c9e-0b3bcd6dff6a'
         subscription_list = self.service.get_subscriptions(
-            org_id=test_org_id, publication_id=STARS_PUBLICATION_ID)
+            org_id=TEST_SUBSCRIPTION_OWNER,
+            publication_id=TEST_PUBLICATION_ID,
+            verbose=True)
         self.assertGreaterEqual(len(subscription_list), 2)
+        self.assertEqual(type(subscription_list[0]), Subscription)
 
         # now for a "long query" - querying ALL subscriptions
         subscription_list = self.service.get_subscriptions(
-            retry_attempts=2, limit_to=3, max_calls=3)
+            limit_to=3, max_calls=3, verbose=True)
         self.assertEqual(len(subscription_list), 9)
+        self.assertEqual(type(subscription_list[0]), Subscription)
 
         # test a long query that's longer than the number we have
         # to ensure that edge case stops the queries
+        # ~1500 subscriptions at the time of these tests
         subscription_list = self.service.get_subscriptions(
-            retry_attempts=5, limit_to=200, max_calls=6)
-        self.assertLess(len(subscription_list), 1500)
+            limit_to=100, start_record=1300, verbose=True)
+        self.assertGreater(len(subscription_list), 0)
+        self.assertEqual(type(subscription_list[0]), Subscription)
 
         # @todo: test the modified date
 

@@ -1,8 +1,13 @@
 import unittest
+import os
 
 from .base import BaseTestCase
-from ..memberships.services import MembershipService
+from ..memberships.services import MembershipService, MembershipProductService
 from ..memberships.models import Membership, MembershipProduct
+
+# might eventually have to come from fixtures
+MEMBER_ORG_ID = os.environ.get('TEST_ORG_ID_MEMBER')
+NONMEMBER_ORG_ID = os.environ.get('TEST_ORG_ID_NONMEMBER')
 
 
 class MembershipServiceTestCase(BaseTestCase):
@@ -10,6 +15,7 @@ class MembershipServiceTestCase(BaseTestCase):
     def setUp(self):
         super(MembershipServiceTestCase, self).setUp()
         self.service = MembershipService(self.client)
+        self.product_service = MembershipProductService(self.client)
 
     @unittest.skip("Need an Organization ID for a non-member org")
     def test_get_membership_for_org(self):
@@ -17,15 +23,13 @@ class MembershipServiceTestCase(BaseTestCase):
         Get membership info for a test org
         """
         # Test org with a membership
-        test_org_id = "6faf90e4-0007-c578-8310-0b3c53985743"
-        membership_list = self.service.get_memberships_for_org(test_org_id)
+        membership_list = self.service.get_memberships_for_org(
+            MEMBER_ORG_ID, verbose=True)
         self.assertEqual(type(membership_list[0]), Membership)
-        self.assertEqual(membership_list[0].id,
-                         '6faf90e4-0074-cbb5-c1d2-0b3c539859ef')
 
         # Test org without a membership
-        test_org_id = "6faf90e4-0007-c92e-8d16-0b3c53985743"
-        membership_list = self.service.get_memberships_for_org(test_org_id)
+        membership_list = self.service.get_memberships_for_org(
+            NONMEMBER_ORG_ID, verbose=True)
         self.assertFalse(membership_list)
 
     def test_get_all_memberships(self):
@@ -33,17 +37,20 @@ class MembershipServiceTestCase(BaseTestCase):
         Does the get_all_memberships() method work?
         """
         membership_list = self.service.get_all_memberships(
-            limit_to=1, max_depth=2
+            limit_to=1, max_calls=2, verbose=True
         )
         self.assertEqual(len(membership_list), 2)
         self.assertEqual(type(membership_list[0]), Membership)
 
     def test_get_all_membership_products(self):
         """
-        Test if we can retrieve all 103 MembershipProduct objects
+        Test if we can retrieve all MembershipProduct objects
+        103 at the time of testing
         """
-        membership_product_list = self.service.get_all_membership_products()
-        self.assertTrue(len(membership_product_list) == 103)
+        service = self.product_service
+        membership_product_list = service.get_all_membership_products(
+            verbose=True)
+        self.assertTrue(len(membership_product_list) > 0)
         self.assertEqual(type(membership_product_list[0]),
                          MembershipProduct)
 
