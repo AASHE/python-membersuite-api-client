@@ -42,6 +42,12 @@ def login_to_portal(username, password, client, retries=2, delay=0):
                               session_id=session_id)
         else:
             attempts += 1
+            try:
+                login_to_portal_result["Errors"]["ConciergeError"][0]["Code"]
+            except IndexError:
+                continue  # Not a ConciergeError
+            else:
+                raise LoginToPortalError(result=result)
 
     raise LoginToPortalError(result=result)
 
