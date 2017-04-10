@@ -6,7 +6,8 @@ from ..organizations.services import OrganizationService
 from ..organizations.models import Organization, OrganizationType
 
 # @todo - this should come from the env for portability
-TEST_ORG_NAME = os.environ.get('TEST_ORG_NAME')
+TEST_ORG_NAME = (os.environ.get('TEST_ORG_NAME', None) or
+                 os.environ["TEST_MS_MEMBER_ORG_NAME"])
 
 
 class OrganizationServiceTestCase(BaseTestCase):
@@ -23,7 +24,7 @@ class OrganizationServiceTestCase(BaseTestCase):
         parameters = {
             'Name': "'%s'" % TEST_ORG_NAME,
         }
-        org_list = self.service.get_orgs(parameters=parameters, verbose=True)
+        org_list = self.service.get_orgs(parameters=parameters)
         self.assertEqual(len(org_list), 1)
         self.assertEqual(type(org_list[0]), Organization)
 
@@ -31,14 +32,14 @@ class OrganizationServiceTestCase(BaseTestCase):
 
         # Fetch all orgs using get_all=True
         # But limit to 1 result per iteration, 2 iterations
-        org_list = self.service.get_orgs(limit_to=1, max_calls=2, verbose=True)
+        org_list = self.service.get_orgs(limit_to=1, max_calls=2)
         self.assertEqual(len(org_list), 2)
         self.assertEqual(type(org_list[0]), Organization)
 
         # How does recursion handle the end?
         # 8055 records at the time of this test
         org_list = self.service.get_orgs(
-            start_record=8000, limit_to=10, verbose=True)
+            start_record=8000, limit_to=10)
         self.assertGreater(len(org_list), 1)
         self.assertEqual(type(org_list[0]), Organization)
 

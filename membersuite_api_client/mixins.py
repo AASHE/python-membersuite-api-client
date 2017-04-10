@@ -6,7 +6,22 @@ from .exceptions import ExecuteMSQLError
 RETRY_ATTEMPTS = 10
 
 
-class ChunkQueryMixin():
+# @retry(stop_max_attempt_number=RETRY_ATTEMPTS, wait_fixed=2000)
+def run_query(client, base_query, start_record, limit_to, verbose=False):
+    """inline method to take advantage of retry"""
+    if verbose:
+        print("[start: %d limit: %d]" % (start_record, limit_to))
+    start = datetime.datetime.now()
+    result = client.runSQL(query=base_query,
+                           start_record=start_record,
+                           limit_to=limit_to)
+    end = datetime.datetime.now()
+    if verbose:
+        print("[%s - %s]" % (start, end))
+    return result
+
+
+class ChunkQueryMixin(object):
     """
     A mixin for API client service classes that makes it easy to consistently
     request multiple queries from a MemberSuite endpoint.
@@ -19,9 +34,8 @@ class ChunkQueryMixin():
         the objects returned by the endpoint
     """
 
-    def get_long_query(
-            self, base_query, limit_to=100, max_calls=None,
-            start_record=0, verbose=False):
+    def get_long_query(self, base_query, limit_to=100, max_calls=None,
+                       start_record=0, verbose=False):
         """
         Takes a base query for all objects and recursively requests them
 
@@ -33,43 +47,25 @@ class ChunkQueryMixin():
         :return: a list of Organization objects
         """
 
-        @retry(stop_max_attempt_number=RETRY_ATTEMPTS, wait_fixed=2000)
-        def run_query(base_query, start_record, limit_to, verbose):
-            # inline method to take advantage of retry
-
-            if verbose:
-                print("[start: %d limit: %d]" % (start_record, limit_to))
-            start = datetime.datetime.now()
-            result = self.client.runSQL(
-                query=base_query,
-                start_record=start_record,
-                limit_to=limit_to,
-            )
-            end = datetime.datetime.now()
-            if verbose:
-                print("[%s - %s]" % (start, end))
-            return self.result_to_models(result)
-
         if verbose:
             print(base_query)
 
         record_index = start_record
-        result = run_query(base_query, record_index, limit_to, verbose)
-        all_objects = result
+        result = run_query(self.client, base_query, record_index,
+                           limit_to, verbose)
+        all_objects = self.result_to_models(result)
         call_count = 1
         """
         continue to run queries as long as we
             - don't exceed the call call_count
             - don't see results that are less than the limited length (the end)
         """
-        while (
-                call_count != max_calls and
-                len(result) >= limit_to):
+        while call_count != max_calls and len(result) >= limit_to:
 
             record_index += len(result)  # should be `limit_to`
-            result = run_query(
-                base_query, record_index, limit_to, verbose)
-            all_objects += result
+            result = run_query(self.client, base_query, record_index,
+                               limit_to, verbose)
+            all_objects += self.result_to_models(result)
             call_count += 1
 
         return all_objects

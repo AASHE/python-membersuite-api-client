@@ -10,7 +10,6 @@
 """
 
 from .models import Subscription
-from ..exceptions import ExecuteMSQLError
 from ..mixins import ChunkQueryMixin
 from ..utils import convert_ms_object
 
@@ -25,9 +24,9 @@ class SubscriptionService(ChunkQueryMixin, object):
         """
         self.client = client
 
-    def get_subscriptions(
-            self, publication_id=None, org_id=None, since_when=None,
-            limit_to=200, max_calls=None, start_record=0, verbose=False):
+    def get_subscriptions(self, publication_id=None, org_id=None,
+                          since_when=None, limit_to=200, max_calls=None,
+                          start_record=0, verbose=False):
         """
         Fetches all subscriptions from Membersuite of a particular
         `publication_id` if set.

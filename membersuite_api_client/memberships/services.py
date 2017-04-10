@@ -4,12 +4,11 @@
     http://api.docs.membersuite.com/#References/Objects/Membership.htm
 
 """
-from zeep.exceptions import TransportError
+import datetime
 
 from ..mixins import ChunkQueryMixin
-from .models import Membership, MembershipProduct
 from ..utils import convert_ms_object
-import datetime
+from .models import Membership, MembershipProduct
 
 
 class MembershipService(ChunkQueryMixin, object):
@@ -31,7 +30,7 @@ class MembershipService(ChunkQueryMixin, object):
                 "WHERE Owner = '%s'" % account_num
 
         membership_list = self.get_long_query(query, verbose=verbose)
-        return membership_list
+        return membership_list or []
 
     def get_all_memberships(
             self, limit_to=100, max_calls=None, parameters=None,
@@ -75,7 +74,7 @@ class MembershipService(ChunkQueryMixin, object):
             query, limit_to=limit_to, max_calls=max_calls,
             start_record=start_record, verbose=verbose)
 
-        return membership_list
+        return membership_list or []
 
     def ms_object_to_model(self, ms_obj):
         " Converts an individual result to a Subscription Model "
@@ -102,7 +101,7 @@ class MembershipProductService(ChunkQueryMixin, object):
         query = "SELECT Objects() FROM MembershipDuesProduct"
 
         membership_product_list = self.get_long_query(query, verbose=verbose)
-        return membership_product_list
+        return membership_product_list or []
 
     def ms_object_to_model(self, ms_obj):
         " Converts an individual result to a Subscription Model "

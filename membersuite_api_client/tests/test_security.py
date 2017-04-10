@@ -9,16 +9,17 @@ from ..utils import get_new_client
 
 LOGIN_TO_PORTAL_RETRIES = 5
 LOGIN_TO_PORTAL_DELAY = 1
-MEMBER_ID = os.environ.get('TEST_MS_PORTAL_MEMBER_ID')
-MEMBER_PASSWORD = os.environ.get('TEST_MS_PORTAL_MEMBER_PASS')
-NONMEMBER_ID = os.environ.get('TEST_MS_PORTAL_NONMEMBER_ID')
-NONMEMBER_PASSWORD = os.environ.get('TEST_MS_PORTAL_NONMEMBER_PASS')
-MEMBER_ORG_NAME = os.environ.get('TEST_MS_MEMBER_ORG_NAME')
-print("**************")
-print("MEMBER_ORG_NAME: %s" % MEMBER_ORG_NAME)
+
+MEMBER_ID = os.environ['TEST_MS_MEMBER_PORTAL_USER_ID']
+MEMBER_PASSWORD = os.environ['TEST_MS_MEMBER_PORTAL_USER_PASSWORD']
+
+NONMEMBER_ID = os.environ['TEST_MS_NON_MEMBER_PORTAL_USER_ID']
+NONMEMBER_PASSWORD = os.environ['TEST_MS_NON_MEMBER_PORTAL_USER_PASSWORD']
+
+MEMBER_ORG_NAME = os.environ['TEST_MS_MEMBER_ORG_NAME']
 
 
-def get_portal_user(client, member=True):
+def _login(client, member=True):
     if client.session_id is None:
         client.request_session()
     if member:
@@ -45,7 +46,7 @@ class SecurityServicesTestCase(unittest.TestCase):
 
     def test_login_to_portal(self):
         """Can we log in to the portal?"""
-        portal_user = get_portal_user(client=self.client)
+        portal_user = _login(client=self.client)
         self.assertIsInstance(portal_user, models.PortalUser)
 
     def test_login_to_portal_failure(self):
@@ -81,7 +82,7 @@ class PortalUserTestCase(unittest.TestCase):
         cls.client = get_new_client()
 
     def setUp(self):
-        self.portal_user = get_portal_user(client=self.client)
+        self.portal_user = _login(client=self.client)
 
     def test_generate_username(self):
         """Does generate_username() work?
@@ -109,7 +110,7 @@ class IndividualTestCase(unittest.TestCase):
 
     def setUp(self):
         self.client.request_session()
-        member_portal_user = get_portal_user(client=self.client)
+        member_portal_user = _login(client=self.client)
         self.individual_member = member_portal_user.get_individual(
             client=self.client)
 
@@ -133,8 +134,8 @@ class IndividualTestCase(unittest.TestCase):
         """
         client = get_new_client()
         client.request_session()
-        non_member_portal_user = get_portal_user(client=client,
-                                                 member=False)
+        non_member_portal_user = _login(client=client,
+                                        member=False)
         individual_non_member = non_member_portal_user.get_individual(
             client=client)
         is_member = individual_non_member.is_member(client=client)

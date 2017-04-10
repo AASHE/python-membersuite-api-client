@@ -24,12 +24,12 @@ class MembershipServiceTestCase(BaseTestCase):
         """
         # Test org with a membership
         membership_list = self.service.get_memberships_for_org(
-            MEMBER_ORG_ID, verbose=True)
+            MEMBER_ORG_ID, verbose=False)
         self.assertEqual(type(membership_list[0]), Membership)
 
         # Test org without a membership
         membership_list = self.service.get_memberships_for_org(
-            NONMEMBER_ORG_ID, verbose=True)
+            NONMEMBER_ORG_ID, verbose=False)
         self.assertFalse(membership_list)
 
     def test_get_all_memberships(self):
@@ -37,7 +37,7 @@ class MembershipServiceTestCase(BaseTestCase):
         Does the get_all_memberships() method work?
         """
         membership_list = self.service.get_all_memberships(
-            limit_to=1, max_calls=2, verbose=True
+            limit_to=1, max_calls=2, verbose=False
         )
         self.assertEqual(len(membership_list), 2)
         self.assertEqual(type(membership_list[0]), Membership)
@@ -48,8 +48,7 @@ class MembershipServiceTestCase(BaseTestCase):
         103 at the time of testing
         """
         service = self.product_service
-        membership_product_list = service.get_all_membership_products(
-            verbose=True)
+        membership_product_list = service.get_all_membership_products()
         self.assertTrue(len(membership_product_list) > 0)
         self.assertEqual(type(membership_product_list[0]),
                          MembershipProduct)
