@@ -9,7 +9,7 @@ def read(fname):
 
 
 setup(name='membersuite_api_client',
-      version='0.1.11',
+      version='0.1.12',
       description='MemberSuite API Client',
       author='AASHE',
       author_email='webdev@aashe.org',
