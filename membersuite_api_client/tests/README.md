@@ -12,10 +12,6 @@ You will need to define the following environment variables:
 
 Until we set up a mechanism for fixtures, you'll need to set up the following:
 
-## Organization vars:
-
- - `TEST_ORG_NAME` - an existing org's name
-
 ## Membership vars:
 
  - `ORG_ID_WITH_MEMBERSHIPS` - an existing org with a membership or two
@@ -23,13 +19,13 @@ Until we set up a mechanism for fixtures, you'll need to set up the following:
 
 ## Security vars:
 
-- `TEST_MS_PORTAL_MEMBER_ID` - member user with portal access
-- `TEST_MS_PORTAL_MEMBER_PASS` - password
-- `TEST_MS_PORTAL_NONMEMBER_ID` - nonmember with portal access
-- `TEST_MS_PORTAL_NONMEMBER_PASS` - password
 - `TEST_MS_MEMBER_ORG_NAME` - the name of the member organization
+- `TEST_MS_MEMBER_PORTAL_USER_ID` - member user with portal access
+- `TEST_MS_MEMBER_PORTAL_USER_PASSWORD` - password
+- `TEST_MS_NONMEMBER_PORTAL_USER_ID` - nonmember with portal access
+- `TEST_MS_NONMENGER_PORTAL_USER_PASSWORD` - password
 
 ## Subscription vars:
 
- - `TEST_ORG_ID_SUBSCRIBER` - org that has subscriptions
- - `TEST_PUBLICATION_ID` - a publication for the subscription above
+ - `TEST_MS_SUBSCRIBER_ORG_ID` - org that has subscriptions
+ - `TEST_MS_PUBLICATION_ID` - a publication for the subscription above

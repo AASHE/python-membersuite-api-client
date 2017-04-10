@@ -6,8 +6,8 @@ from ..subscriptions.services import SubscriptionService
 from ..subscriptions.models import Subscription
 
 # @todo - these should go in the env to be portable across associations
-TEST_SUBSCRIPTION_OWNER = os.environ.get('TEST_ORG_ID_SUBSCRIBER')
-TEST_PUBLICATION_ID = os.environ.get('TEST_PUBLICATION_ID')
+TEST_MS_SUBSCRIPTION_ORG_ID = os.environ['TEST_MS_SUBSCRIBER_ORG_ID']
+TEST_MS_PUBLICATION_ID = os.environ['TEST_MS_PUBLICATION_ID']
 
 
 class SubscriptionTestCase(BaseTestCase):
@@ -21,15 +21,15 @@ class SubscriptionTestCase(BaseTestCase):
         Get the all subscriptions for an organization
         """
         subscription_list = self.service.get_subscriptions(
-            org_id=TEST_SUBSCRIPTION_OWNER)
+            org_id=TEST_MS_SUBSCRIPTION_ORG_ID)
         self.assertGreaterEqual(len(subscription_list), 2)
         self.assertEqual(type(subscription_list[0]), Subscription)
 
     def test_get_org_subscriptions_by_publication_id(self):
         # with publication_id
         subscription_list = self.service.get_subscriptions(
-            org_id=TEST_SUBSCRIPTION_OWNER,
-            publication_id=TEST_PUBLICATION_ID)
+            org_id=TEST_MS_SUBSCRIPTION_ORG_ID,
+            publication_id=TEST_MS_PUBLICATION_ID)
         self.assertGreaterEqual(len(subscription_list), 2)
         self.assertEqual(type(subscription_list[0]), Subscription)
 

@@ -6,8 +6,8 @@ from ..memberships.services import MembershipService, MembershipProductService
 from ..memberships.models import Membership, MembershipProduct
 
 # might eventually have to come from fixtures
-MEMBER_ORG_ID = os.environ.get('TEST_ORG_ID_MEMBER')
-NONMEMBER_ORG_ID = os.environ.get('TEST_ORG_ID_NONMEMBER')
+MEMBER_ORG_ID = os.environ.get('TEST_MS_MEMBER_ORG_ID')
+NONMEMBER_ORG_ID = os.environ.get('TEST_MS_NON_MEMBER_ORG_ID')
 
 
 class MembershipServiceTestCase(BaseTestCase):
