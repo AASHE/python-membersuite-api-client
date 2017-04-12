@@ -6,7 +6,7 @@ from .exceptions import ExecuteMSQLError
 RETRY_ATTEMPTS = 10
 
 
-# @retry(stop_max_attempt_number=RETRY_ATTEMPTS, wait_fixed=2000)
+@retry(stop_max_attempt_number=RETRY_ATTEMPTS, wait_fixed=2000)
 def run_query(client, base_query, start_record, limit_to, verbose=False):
     """inline method to take advantage of retry"""
     if verbose:
@@ -53,6 +53,8 @@ class ChunkQueryMixin(object):
         record_index = start_record
         result = run_query(self.client, base_query, record_index,
                            limit_to, verbose)
+        result_set = result['body']["ExecuteMSQLResult"]["ResultValue"]\
+            ["ObjectSearchResult"]["Objects"]["MemberSuiteObject"]
         all_objects = self.result_to_models(result)
         call_count = 1
         """
@@ -60,11 +62,14 @@ class ChunkQueryMixin(object):
             - don't exceed the call call_count
             - don't see results that are less than the limited length (the end)
         """
-        while call_count != max_calls and len(result) >= limit_to:
+        while call_count != max_calls and len(result_set) >= limit_to:
 
-            record_index += len(result)  # should be `limit_to`
+            record_index += len(result_set)  # should be `limit_to`
             result = run_query(self.client, base_query, record_index,
                                limit_to, verbose)
+            result_set = result['body']["ExecuteMSQLResult"]\
+                ["ResultValue"]["ObjectSearchResult"]["Objects"]\
+                ["MemberSuiteObject"]
             all_objects += self.result_to_models(result)
             call_count += 1
 
