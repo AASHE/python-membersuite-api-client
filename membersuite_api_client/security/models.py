@@ -50,17 +50,15 @@ class PortalUser(MemberSuiteObject):
             6faf90e4-0032-c842-a28a-0b3c8b856f80
 
         That's 36 characters, too long for username.  Making the
-        assumption that those leading zeroes will always be there in
+        assumption that those leading digits will always be there in
         every ID.  Since they're not needed to generate a unique
         value, they can go.
 
-        After chomping the zeroes, we're at 27 characters, so we
-        insert "ms-" in the front.
+        After chomping the intro, we're at 27 characters, so we
+        insert "ms" in the front.
 
         """
-        assert self.membersuite_id.startswith("6faf90e4-")
-        username = self.membersuite_id.replace("6faf90e4-", '')
-        username = "ms-" + username
+        username = "ms" + self.membersuite_id[len("6faf90e4"):]
         return username
 
     def get_individual(self, client):
