@@ -47,7 +47,7 @@ class PortalUser(MemberSuiteObject):
         We want to incorporate the membersuite_id in the username.
         Those look like this:
 
-            00000000-0032-c842-a28a-0b3c8b856f80
+            6faf90e4-0032-c842-a28a-0b3c8b856f80
 
         That's 36 characters, too long for username.  Making the
         assumption that those leading zeroes will always be there in
@@ -58,8 +58,8 @@ class PortalUser(MemberSuiteObject):
         insert "ms-" in the front.
 
         """
-        assert self.membersuite_id.startswith("00000000-")
-        username = self.membersuite_id.replace("00000000-", '')
+        assert self.membersuite_id.startswith("6faf90e4-")
+        username = self.membersuite_id.replace("6faf90e4-", '')
         username = "ms-" + username
         return username
 

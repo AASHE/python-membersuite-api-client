@@ -88,7 +88,7 @@ class PortalUserTestCase(unittest.TestCase):
         """Does generate_username() work?
 
         """
-        self.portal_user.membersuite_id = "00000000-fake-membersuite-id"
+        self.portal_user.membersuite_id = "6faf90e4-fake-membersuite-id"
         self.assertEqual("ms-fake-membersuite-id",
                          self.portal_user.generate_username())
 
