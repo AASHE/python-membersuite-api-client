@@ -27,5 +27,5 @@ Until we set up a mechanism for fixtures, you'll need to set up the following:
 
 ## Subscription vars:
 
- - `TEST_MS_SUBSCRIBER_ORG_ID` - org that has subscriptions
+ - `TEST_MS_SUBSCRIBER_ORG_ID` - org that has more than one subscription
  - `TEST_MS_PUBLICATION_ID` - a publication for the subscription above
