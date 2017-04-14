@@ -57,7 +57,7 @@ class ChunkQueryMixin(object):
         try:
             obj_result = mysql_result["ResultValue"]["ObjectSearchResult"]
             result_set = obj_result["Objects"]["MemberSuiteObject"]
-        except TypeError, e:
+        except TypeError as e:
             raise ExecuteMSQLError(result['body']["ExecuteMSQLResult"])
         all_objects = self.result_to_models(result)
         call_count = 1
