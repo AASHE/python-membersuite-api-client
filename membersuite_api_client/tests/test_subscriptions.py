@@ -2,8 +2,10 @@ import unittest
 import os
 
 from .base import BaseTestCase
+from ..exceptions import ExecuteMSQLError
 from ..subscriptions.services import SubscriptionService
 from ..subscriptions.models import Subscription
+
 
 # @todo - these should go in the env to be portable across associations
 TEST_MS_SUBSCRIBER_ORG_ID = os.environ['TEST_MS_SUBSCRIBER_ORG_ID']
@@ -33,6 +35,12 @@ class SubscriptionTestCase(BaseTestCase):
         self.assertGreaterEqual(len(subscription_list), 2)
         self.assertEqual(type(subscription_list[0]), Subscription)
 
+        # test error handling of bogus publication
+        with self.assertRaises(ExecuteMSQLError):
+            subscription_list = self.service.get_subscriptions(
+                org_id=TEST_MS_SUBSCRIBER_ORG_ID,
+                publication_id='bogus_id')
+
     def test_get_org_subscriptions_long_query(self):
         # now for a "long query" - querying ALL subscriptions
         subscription_list = self.service.get_subscriptions(
@@ -48,8 +56,6 @@ class SubscriptionTestCase(BaseTestCase):
         # below is hard-coded and must be within 99 Subscriptions
         # of the total number of Subscriptions.  Make it better.
         # SELECT COUNT() FROM Subscription (sic).
-        # count_query = 'SELECT COUNT() FROM Subscription'
-        # self.client.runSQL(count_query)
         subscription_list = self.service.get_subscriptions(
             limit_to=100, start_record=1100)
         self.assertGreater(len(subscription_list), 0)
