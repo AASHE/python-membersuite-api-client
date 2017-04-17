@@ -53,7 +53,6 @@ class ChunkQueryMixin(object):
         record_index = start_record
         result = run_query(self.client, base_query, record_index,
                            limit_to, verbose)
-
         search_results = (result['body']["ExecuteMSQLResult"]["ResultValue"]
                           ["ObjectSearchResult"]["Objects"])
 
