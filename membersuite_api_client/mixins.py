@@ -54,8 +54,12 @@ class ChunkQueryMixin(object):
         result = run_query(self.client, base_query, record_index,
                            limit_to, verbose)
 
-        search_results = (result['body']["ExecuteMSQLResult"]["ResultValue"]
-                          ["ObjectSearchResult"]["Objects"])
+        obj_search_result = (result['body']["ExecuteMSQLResult"]["ResultValue"]
+                             ["ObjectSearchResult"])
+        if obj_search_result is not None:
+            search_results = obj_search_result["Objects"]
+        else:
+            return []
 
         if search_results is None:
             return []
@@ -74,9 +78,14 @@ class ChunkQueryMixin(object):
             record_index += len(result_set)  # should be `limit_to`
             result = run_query(self.client, base_query, record_index,
                                limit_to, verbose)
-            search_results = (result['body']["ExecuteMSQLResult"]
-                              ["ResultValue"]["ObjectSearchResult"]
-                              ["Objects"])
+
+            obj_search_result = (result['body']["ExecuteMSQLResult"]
+                                 ["ResultValue"]["ObjectSearchResult"])
+            if obj_search_result is not None:
+                search_results = obj_search_result["Objects"]
+            else:
+                search_results = None
+
 
             if search_results is None:
                 result_set = []
