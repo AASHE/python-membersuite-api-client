@@ -53,12 +53,14 @@ class ChunkQueryMixin(object):
         record_index = start_record
         result = run_query(self.client, base_query, record_index,
                            limit_to, verbose)
-        mysql_result = result['body']["ExecuteMSQLResult"]
-        try:
-            obj_result = mysql_result["ResultValue"]["ObjectSearchResult"]
-            result_set = obj_result["Objects"]["MemberSuiteObject"]
-        except TypeError as e:
-            raise ExecuteMSQLError(result['body']["ExecuteMSQLResult"])
+        search_results = (result['body']["ExecuteMSQLResult"]["ResultValue"]
+                          ["ObjectSearchResult"]["Objects"])
+
+        if search_results is None:
+            return []
+
+        result_set = search_results["MemberSuiteObject"]
+
         all_objects = self.result_to_models(result)
         call_count = 1
         """
@@ -71,9 +73,15 @@ class ChunkQueryMixin(object):
             record_index += len(result_set)  # should be `limit_to`
             result = run_query(self.client, base_query, record_index,
                                limit_to, verbose)
-            result_set = result['body']["ExecuteMSQLResult"]\
-                ["ResultValue"]["ObjectSearchResult"]["Objects"]\
-                ["MemberSuiteObject"]
+            search_results = (result['body']["ExecuteMSQLResult"]
+                              ["ResultValue"]["ObjectSearchResult"]
+                              ["Objects"])
+
+            if search_results is None:
+                result_set = []
+            else:
+                result_set = search_results["MemberSuiteObject"]
+
             all_objects += self.result_to_models(result)
             call_count += 1
 
