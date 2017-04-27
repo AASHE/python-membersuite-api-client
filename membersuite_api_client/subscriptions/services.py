@@ -67,6 +67,7 @@ class SubscriptionService(ChunkQueryMixin, object):
         subscription = Subscription(
             id=sane_obj['ID'],
             org_id=sane_obj['Owner'],
+            name=sane_obj['Name'],
             start=sane_obj['StartDate'],
             end=sane_obj['ExpirationDate'],
             extra_data=sane_obj)
