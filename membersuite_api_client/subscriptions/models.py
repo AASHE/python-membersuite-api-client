@@ -18,6 +18,7 @@ class Subscription(MemberSuiteObject):
         self.owner_id = self.fields['Owner']
         self.start_date = self.fields['StartDate']
         self.expiration_date = self.fields['ExpirationDate']
+        self.name = self.fields['Name']
         self.order_id = self.fields['OriginalOrder']
 
     def get_order(self, client=None):
