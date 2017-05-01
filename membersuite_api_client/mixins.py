@@ -28,10 +28,6 @@ class ChunkQueryMixin(object):
 
     Membersuite will often time out on big queries, so this allows us to
     break it up into smaller requests.
-
-    Design assumptions:
-        - The service defines an `result_to_models` method to "transform"
-        the objects returned by the endpoint
     """
 
     def get_long_query(self, base_query, limit_to=100, max_calls=None,
@@ -85,7 +81,6 @@ class ChunkQueryMixin(object):
                 search_results = obj_search_result["Objects"]
             else:
                 search_results = None
-
 
             if search_results is None:
                 result_set = []

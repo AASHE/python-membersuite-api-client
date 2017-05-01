@@ -8,16 +8,18 @@ from .utils import convert_ms_object
 @python_2_unicode_compatible
 class MemberSuiteObject(object):
 
-    def __init__(self, membersuite_object_data):
+    def __init__(self, membersuite_object_data, membersuite_id=None):
         """Takes the Zeep'ed XML Representation of a MemberSuiteObject as
         input.
 
         """
         self.fields = convert_ms_object(
             membersuite_object_data["Fields"]["KeyValueOfstringanyType"])
-
-        self.membersuite_id = self.fields["ID"]
         self.extra_data = membersuite_object_data
+        self.membersuite_id = (self.fields["ID"]
+                               if membersuite_id is None
+                               else membersuite_id)
 
     def __str__(self):
-        return ("<MemberSuiteObject: ID: {id}>".format(id=self.id))
+        return ("<MemberSuiteObject: MemberSuite ID: {id}>".format(
+            id=self.membersuite_id))

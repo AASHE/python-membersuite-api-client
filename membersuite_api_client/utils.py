@@ -41,14 +41,17 @@ def membersuite_object_factory(membersuite_object_data):
         return klass(membersuite_object_data=membersuite_object_data)
 
 
-def get_new_client():
+def get_new_client(request_session=False):
     """Return a new ConciergeClient, pulling secrets from the environment.
 
     """
     from .client import ConciergeClient
-    return ConciergeClient(access_key=os.environ["MS_ACCESS_KEY"],
-                           secret_key=os.environ["MS_SECRET_KEY"],
-                           association_id=os.environ["MS_ASSOCIATION_ID"])
+    client = ConciergeClient(access_key=os.environ["MS_ACCESS_KEY"],
+                             secret_key=os.environ["MS_SECRET_KEY"],
+                             association_id=os.environ["MS_ASSOCIATION_ID"])
+    if request_session:
+        client.request_session()
+    return client
 
 
 def submit_msql_query(query, client=None):
@@ -59,8 +62,7 @@ def submit_msql_query(query, client=None):
     Returns query results as a list of MemberSuiteObjects.
 
     """
-    if client is None:
-        client = get_new_client()
+    client = client or get_new_client()
     if not client.session_id:
         client.request_session()
 
@@ -91,3 +93,12 @@ def submit_msql_query(query, client=None):
     else:
         # @TODO Fix - exposing only the first of possibly many errors here.
         raise ExecuteMSQLError(result=execute_msql_result)
+
+
+def value_for_key(membersuite_object_data, key):
+    """Return the value for `key` of membersuite_object_data.
+    """
+    key_value_dicts = {
+        d['Key']: d['Value'] for d
+        in membersuite_object_data["Fields"]["KeyValueOfstringanyType"]}
+    return key_value_dicts[key]

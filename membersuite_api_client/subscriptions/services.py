@@ -8,23 +8,23 @@
     @todo
         add date modified param for performance
 """
-
-from .models import Subscription
 from ..mixins import ChunkQueryMixin
-from ..utils import convert_ms_object
+from ..utils import get_new_client
+from .models import Subscription
 
 import datetime
 
 
 class SubscriptionService(ChunkQueryMixin, object):
 
-    def __init__(self, client):
+    def __init__(self, client=None):
         """
         Accepts a ConciergeClient to connect with MemberSuite
         """
-        self.client = client
+        super(SubscriptionService, self).__init__()
+        self.client = client or get_new_client()
 
-    def get_subscriptions(self, publication_id=None, org_id=None,
+    def get_subscriptions(self, publication_id=None, owner_id=None,
                           since_when=None, limit_to=200, max_calls=None,
                           start_record=0, verbose=False):
         """
@@ -37,8 +37,8 @@ class SubscriptionService(ChunkQueryMixin, object):
         # (key, operator, value) tuples
         where_params = []
 
-        if org_id:
-            where_params.append(('owner', '=', "'%s'" % org_id))
+        if owner_id:
+            where_params.append(('owner', '=', "'%s'" % owner_id))
         if publication_id:
             where_params.append(('publication', '=', "'%s'" % publication_id))
         if since_when:
@@ -51,9 +51,6 @@ class SubscriptionService(ChunkQueryMixin, object):
             query += " AND ".join(
                 ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
 
-        # note, get_long_query is overkill when just looking at
-        # one org, but it still only executes once
-        # `get_long_query` uses `ms_object_to_model` to return Subscriptions
         subscription_list = self.get_long_query(
             query, limit_to=limit_to, max_calls=max_calls,
             start_record=start_record, verbose=verbose)
@@ -62,13 +59,4 @@ class SubscriptionService(ChunkQueryMixin, object):
 
     def ms_object_to_model(self, ms_obj):
         " Converts an individual result to a Subscription Model "
-        sane_obj = convert_ms_object(
-            ms_obj['Fields']['KeyValueOfstringanyType'])
-        subscription = Subscription(
-            id=sane_obj['ID'],
-            org_id=sane_obj['Owner'],
-            name=sane_obj['Name'],
-            start=sane_obj['StartDate'],
-            end=sane_obj['ExpirationDate'],
-            extra_data=sane_obj)
-        return subscription
+        return Subscription(membersuite_object_data=ms_obj)
