@@ -37,6 +37,7 @@ class PortalUser(MemberSuiteObject):
                     owner=self.owner,
                     session_id=self.session_id))
 
+
     def generate_username(self):
         """Return a username suitable for storing in auth.User.username.
 
@@ -130,16 +131,18 @@ class Individual(MemberSuiteObject):
 
         primary_organization = self.get_primary_organization(client=client)
 
-        membership_service = membership_services.MembershipService(
-            client=client)
-
-        try:
-            membership = membership_service.get_memberships_for_org(
-                account_num=primary_organization.id)[0]
-        except IndexError:
+        if primary_organization:
+            membership_service = membership_services.MembershipService(
+                client=client)
+            try:
+                membership = membership_service.get_memberships_for_org(
+                    account_num=primary_organization.id)[0]
+            except IndexError:
+                return False
+            else:
+                return membership.receives_member_benefits
+        else:  # No primary organization.
             return False
-
-        return membership.receives_member_benefits
 
     def get_primary_organization(self, client):
         """Return the primary Organization for this Individual.
