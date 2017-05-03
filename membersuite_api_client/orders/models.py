@@ -65,14 +65,16 @@ class Order(MemberSuiteObject):
                     session_id=self.session_id))
 
     @property
-    def first_line_item(self):
-        """Returns the first OrderLineItem object for line items in this order.
+    def line_items(self):
+        """Returns the OrderLineItem objects for line items
+        in this order.
         """
         membersuite_object_data = (
-            self.fields["LineItems"]["MemberSuiteObject"][0])
-        line_item = OrderLineItem(
-            membersuite_object_data=membersuite_object_data)
-        return line_item
+            self.fields["LineItems"]["MemberSuiteObject"])
+        line_items = []
+        for datum in membersuite_object_data:
+            line_items.append(OrderLineItem(membersuite_object_data=datum))
+        return line_items
 
     def get_products(self, client=None):
         """A list of Product objects in this Order.
