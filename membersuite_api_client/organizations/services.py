@@ -4,21 +4,22 @@
     http://api.docs.membersuite.com/#References/Objects/Organization.htm
 
 """
-
-from ..mixins import ChunkQueryMixin
-from .models import Organization, OrganizationType
-from ..utils import convert_ms_object
-from zeep.exceptions import TransportError
 import datetime
+
+from ..exceptions import ExecuteMSQLError
+from ..mixins import ChunkQueryMixin
+from ..security.models import Individual
+from ..utils import convert_ms_object, get_new_client
+from .models import Organization, OrganizationType
 
 
 class OrganizationService(ChunkQueryMixin, object):
 
-    def __init__(self, client):
+    def __init__(self, client=None):
         """
         Accepts a ConciergeClient to connect with MemberSuite
         """
-        self.client = client
+        self.client = client or get_new_client(request_session=True)
 
     def get_orgs(
             self, limit_to=100, max_calls=None, parameters=None,
@@ -104,3 +105,42 @@ class OrganizationService(ChunkQueryMixin, object):
             org = OrganizationType(sane_obj)
             org_type_list.append(org)
         return org_type_list
+
+    def get_individuals_for_primary_organization(self, organization):
+        """
+        Returns all Individuals that have `organization` as a primary org.
+
+        """
+        if not self.client.session_id:
+            self.client.request_session()
+
+        query = ("SELECT Objects() FROM Individual WHERE "
+                 "PrimaryOrganization = '{}'".format(
+                     organization.membersuite_account_num))
+
+        result = self.client.runSQL(query)
+
+        msql_result = result["body"]["ExecuteMSQLResult"]
+
+        if msql_result["Success"]:
+            membersuite_objects = (msql_result["ResultValue"]
+                                   ["ObjectSearchResult"]
+                                   ["Objects"])
+        else:
+            raise ExecuteMSQLError(result=result)
+
+        individuals = []
+
+        for membersuite_object in membersuite_objects["MemberSuiteObject"]:
+            individuals.append(
+                Individual(membersuite_object_data=membersuite_object))
+
+        return individuals
+
+    def get_stars_liaison_for_organization(self, organization):
+        candidates = self.get_individuals_for_primary_organization(
+            organization=organization)
+        for candidate in candidates:
+            if "StarsPrimaryContact__rt" in candidate.fields:
+                return candidate
+        return None
