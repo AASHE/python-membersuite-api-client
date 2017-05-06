@@ -9,6 +9,31 @@ from ..organizations.models import Organization
 from ..utils import convert_ms_object
 
 
+def generate_username(membersuite_object):
+    """Return a username suitable for storing in auth.User.username.
+
+    Has to be <= 30 characters long.  (Until we drop support for
+    Django 1.4, after which we can define a custom User model with
+    a larger username field.)
+
+    We want to incorporate the membersuite_id in the username.
+    Those look like this:
+
+        6faf90e4-0032-c842-a28a-0b3c8b856f80
+
+    That's 36 characters, too long for username.  Making the
+    assumption that those leading digits will always be there in
+    every ID.  Since they're not needed to generate a unique
+    value, they can go.
+
+    After chomping the intro, we're at 27 characters, so we
+    insert "ms" in the front.
+
+    """
+    username = "ms" + membersuite_object.membersuite_id[len("6faf90e4"):]
+    return username
+
+
 @python_2_unicode_compatible
 class PortalUser(MemberSuiteObject):
 
@@ -37,30 +62,6 @@ class PortalUser(MemberSuiteObject):
                     owner=self.owner,
                     session_id=self.session_id))
 
-
-    def generate_username(self):
-        """Return a username suitable for storing in auth.User.username.
-
-        Has to be <= 30 characters long.  (Until we drop support for
-        Django 1.4, after which we can define a custom User model with
-        a larger username field.)
-
-        We want to incorporate the membersuite_id in the username.
-        Those look like this:
-
-            6faf90e4-0032-c842-a28a-0b3c8b856f80
-
-        That's 36 characters, too long for username.  Making the
-        assumption that those leading digits will always be there in
-        every ID.  Since they're not needed to generate a unique
-        value, they can go.
-
-        After chomping the intro, we're at 27 characters, so we
-        insert "ms" in the front.
-
-        """
-        username = "ms" + self.membersuite_id[len("6faf90e4"):]
-        return username
 
     def get_individual(self, client):
         """Return the Individual that owns this PortalUser.
@@ -100,8 +101,9 @@ class Individual(MemberSuiteObject):
         self.email_address = self.fields["EmailAddress"]
         self.first_name = self.fields["FirstName"]
         self.last_name = self.fields["LastName"]
+        self.title = self.fields["Title"]
 
-        self.primary_organization__rtg = (
+        self.primary_organization_id = (
             self.fields["PrimaryOrganization__rtg"])
 
         self.portal_user = portal_user
@@ -113,6 +115,15 @@ class Individual(MemberSuiteObject):
                     email_address=self.email_address,
                     first_name=self.first_name,
                     last_name=self.last_name))
+
+    @property
+    def phone_number(self):
+        for key_value_pair in (
+                self.fields["PhoneNumbers"]["MemberSuiteObject"][0]
+                ["Fields"]["KeyValueOfstringanyType"]):
+            if key_value_pair["Key"] == "PhoneNumber":
+                return key_value_pair["Value"]
+        return None
 
     def is_member(self, client):
         """Is this Individual a member?
@@ -148,14 +159,14 @@ class Individual(MemberSuiteObject):
         """Return the primary Organization for this Individual.
 
         """
-        if self.primary_organization__rtg is None:
+        if self.primary_organization_id is None:
             return None
 
         if not client.session_id:
             client.request_session()
 
         query = "SELECT OBJECT() FROM ORGANIZATION WHERE ID = '{}'".format(
-            self.primary_organization__rtg)
+            self.primary_organization_id)
 
         result = client.runSQL(query)
 
