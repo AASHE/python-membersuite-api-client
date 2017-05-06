@@ -1,6 +1,8 @@
 import time
 
-from .models import PortalUser
+from django.contrib.auth.models import User
+
+from .models import PortalUser, generate_username
 from ..exceptions import LoginToPortalError, LogoutError
 from ..utils import get_session_id
 
@@ -78,3 +80,41 @@ def logout(client):
         client.session_id = None
     else:  # Failure . . .
         raise LogoutError(result=result)
+
+
+def get_user_for_membersuite_entity(membersuite_entity):
+    """Returns a User for `membersuite_entity`.
+
+    membersuite_entity is any MemberSuite object that has the fields
+    membersuite_id, email_address, first_name, and last_name, e.g.,
+    PortalUser or Individual.
+
+    """
+    user = None
+    user_created = False
+
+    # First, try to match on username.
+    user_username = generate_username(membersuite_entity)
+    try:
+        user = User.objects.get(username=user_username)
+    except User.DoesNotExist:
+        pass
+
+    # Next, try to match on email address.
+    if not user:
+        try:
+            user = User.objects.filter(
+                email=membersuite_entity.email_address)[0]
+        except IndexError:
+            pass
+
+    # No match? Create one.
+    if not user:
+        user = User.objects.create(
+            username=user_username,
+            email=membersuite_entity.email_address,
+            first_name=membersuite_entity.first_name,
+            last_name=membersuite_entity.last_name)
+        user_created = True
+
+    return user, user_created

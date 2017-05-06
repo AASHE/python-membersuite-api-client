@@ -90,7 +90,7 @@ class PortalUserTestCase(unittest.TestCase):
         """
         self.portal_user.membersuite_id = "6faf90e4-fake-membersuite-id"
         self.assertEqual("ms-fake-membersuite-id",
-                         self.portal_user.generate_username())
+                         models.generate_username())
 
     def test_get_individual(self):
         """Does get_individual() work?
