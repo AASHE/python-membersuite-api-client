@@ -118,11 +118,12 @@ class Individual(MemberSuiteObject):
 
     @property
     def phone_number(self):
-        for key_value_pair in (
-                self.fields["PhoneNumbers"]["MemberSuiteObject"][0]
-                ["Fields"]["KeyValueOfstringanyType"]):
-            if key_value_pair["Key"] == "PhoneNumber":
-                return key_value_pair["Value"]
+        numbers = self.fields["PhoneNumbers"]["MemberSuiteObject"]
+        if len(numbers):
+            for key_value_pair in (numbers[0]
+                                   ["Fields"]["KeyValueOfstringanyType"]):
+                if key_value_pair["Key"] == "PhoneNumber":
+                    return key_value_pair["Value"]
         return None
 
     def is_member(self, client):

@@ -106,7 +106,8 @@ class OrganizationService(ChunkQueryMixin, object):
             org_type_list.append(org)
         return org_type_list
 
-    def get_individuals_for_primary_organization(self, organization):
+    def get_individuals_for_primary_organization(self,
+                                                 organization):
         """
         Returns all Individuals that have `organization` as a primary org.
 
