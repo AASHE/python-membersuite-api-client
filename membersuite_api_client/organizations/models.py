@@ -3,12 +3,9 @@ class Organization(object):
     def __init__(self, org):
         """Create an Organization model from MemberSuite Organization object
         """
-        self.account_num = org["ID"]
-        self.id = self.account_num
-        self.membersuite_id = org["LocalID"]
-        self.local_id = self.membersuite_id
-        self.org_name = org["Name"]
-        self.name = self.org_name
+        self.id = self.account_num = org["ID"]
+        self.local_id = self.membersuite_id = org["LocalID"]
+        self.name = self.org_name = org["Name"]
         self.picklist_name = org["SortName"] or ''
 
         self.address = org["Mailing_Address"]
@@ -41,6 +38,7 @@ class OrganizationType(object):
         """
         self.id = org_type["ID"]
         self.name = org_type["Name"]
+
 
 STATUSES = {
     '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
