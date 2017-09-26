@@ -132,9 +132,10 @@ class OrganizationService(ChunkQueryMixin, object):
 
         individuals = []
 
-        for membersuite_object in membersuite_objects["MemberSuiteObject"]:
-            individuals.append(
-                Individual(membersuite_object_data=membersuite_object))
+        if membersuite_objects["MemberSuiteObject"] is not None:
+            for membersuite_object in membersuite_objects["MemberSuiteObject"]:
+                individuals.append(
+                    Individual(membersuite_object_data=membersuite_object))
 
         return individuals
 
