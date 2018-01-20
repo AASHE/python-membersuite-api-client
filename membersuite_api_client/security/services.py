@@ -82,6 +82,10 @@ def logout(client):
         raise LogoutError(result=result)
 
 
+# get_user_for_membersuite_entity introduces a dependency on
+# Django (django.contrib.auth.models, to be precise).  That's
+# quite a drag.  Goes someplace else.  Need to drop dependency
+# on Django.
 def get_user_for_membersuite_entity(membersuite_entity):
     """Returns a User for `membersuite_entity`.
 

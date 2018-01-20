@@ -139,10 +139,26 @@ class OrganizationService(ChunkQueryMixin, object):
 
         return individuals
 
+    # get_stars_liaison_for_organization doesn't belong here.  It should
+    # live in some AASHE-specific place, not in OrganizationService.
     def get_stars_liaison_for_organization(self, organization):
+
         candidates = self.get_individuals_for_primary_organization(
             organization=organization)
+
+        # Check for a STARS Primary Contact first:
         for candidate in candidates:
             if "StarsPrimaryContact__rt" in candidate.fields:
                 return candidate
+
+        # No STARS Primary Contact? Try the account's primary contact:
+        for candidate in candidates:
+            if "Primary_Contact__rt" in candidate.fields:
+                return candidate
+
+        # No primary contact? Try billing contact:
+        for candidate in candidates:
+            if "Billing_Contact__rt" in candidate.fields:
+                return candidate
+
         return None
