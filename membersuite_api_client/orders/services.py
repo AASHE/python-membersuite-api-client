@@ -13,10 +13,10 @@ def get_order(membersuite_id, client=None):
     if not client.session_id:
         client.request_session()
 
-    query = "SELECT Object() FROM ORDER WHERE ID = '{}'".format(
+    object_query = "SELECT Object() FROM ORDER WHERE ID = '{}'".format(
         membersuite_id)
 
-    result = client.runSQL(query)
+    result = client.execute_object_query(object_query)
 
     msql_result = result["body"]["ExecuteMSQLResult"]
 

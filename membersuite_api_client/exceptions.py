@@ -8,11 +8,12 @@ class MemberSuiteAPIError(Exception):
 
     def __init__(self, result):
         self.result = result
+        self.exception_type = self.__class__.__name__
 
     def __str__(self):
         concierge_error = self.get_concierge_error()
-        return "<{classname} ConciergeError: {concierge_error}>".format(
-            classname=self.__class__.__name__,
+        return "<{exception_type} ConciergeError: {concierge_error}>".format(
+            exception_type=self.exception_type,
             concierge_error=concierge_error)
 
     def get_concierge_error(self):
@@ -24,15 +25,20 @@ class MemberSuiteAPIError(Exception):
 
 
 class LoginToPortalError(MemberSuiteAPIError):
-
-    result_type = "LoginToPortalResult"
+    pass
 
 
 class LogoutError(MemberSuiteAPIError):
-
-    result_type = "LogoutResult"
+    pass
 
 
 class ExecuteMSQLError(MemberSuiteAPIError):
+    pass
 
-    result_type = "ExecuteMSQLResult"
+
+class NoResultsError(MemberSuiteAPIError):
+    pass
+
+
+class NotAnObjectQuery(MemberSuiteAPIError):
+    pass

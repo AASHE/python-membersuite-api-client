@@ -62,7 +62,6 @@ class PortalUser(MemberSuiteObject):
                     owner=self.owner,
                     session_id=self.session_id))
 
-
     def get_individual(self, client):
         """Return the Individual that owns this PortalUser.
 
@@ -70,10 +69,10 @@ class PortalUser(MemberSuiteObject):
         if not client.session_id:
             client.request_session()
 
-        query = "SELECT OBJECT() FROM INDIVIDUAL WHERE ID = '{}'".format(
-            self.owner)
+        object_query = ("SELECT OBJECT() FROM INDIVIDUAL "
+                        "WHERE ID = '{}'".format(self.owner))
 
-        result = client.runSQL(query)
+        result = client.execute_object_query(object_query)
 
         msql_result = result["body"]["ExecuteMSQLResult"]
 
@@ -166,10 +165,11 @@ class Individual(MemberSuiteObject):
         if not client.session_id:
             client.request_session()
 
-        query = "SELECT OBJECT() FROM ORGANIZATION WHERE ID = '{}'".format(
-            self.primary_organization_id)
+        object_query = ("SELECT OBJECT() FROM ORGANIZATION "
+                        "WHERE ID = '{}'".format(
+                            self.primary_organization_id))
 
-        result = client.runSQL(query)
+        result = client.execute_object_query(object_query)
 
         msql_result = result["body"]["ExecuteMSQLResult"]
 

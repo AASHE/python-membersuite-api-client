@@ -67,41 +67,42 @@ class ConciergeClient(object):
         Constructs the Concierge Request Header lxml object to be used as the
         '_soapheaders' argument for WSDL methods.
         """
-        concierge_request_header = \
+        concierge_request_header = (
             etree.Element(
                 etree.QName(XHTML_NAMESPACE, "ConciergeRequestHeader"),
-                nsmap={'sch': XHTML_NAMESPACE})
+                nsmap={'sch': XHTML_NAMESPACE}))
 
         if self.session_id:
-            session = \
+            session = (
                 etree.SubElement(concierge_request_header,
-                                 etree.QName(XHTML_NAMESPACE, "SessionId"))
+                                 etree.QName(XHTML_NAMESPACE, "SessionId")))
             session.text = self.session_id
 
-        access_key = \
+        access_key = (
             etree.SubElement(concierge_request_header,
-                             etree.QName(XHTML_NAMESPACE, "AccessKeyId"))
+                             etree.QName(XHTML_NAMESPACE, "AccessKeyId")))
         access_key.text = self.access_key
 
-        association_id = \
-            etree.SubElement(concierge_request_header,
-                             etree.QName(XHTML_NAMESPACE, "AssociationId"))
+        association_id = (etree.SubElement(concierge_request_header,
+                                           etree.QName(XHTML_NAMESPACE,
+                                                       "AssociationId")))
         association_id.text = self.association_id
 
-        signature = \
+        signature = (
             etree.SubElement(concierge_request_header,
-                             etree.QName(XHTML_NAMESPACE, "Signature"))
+                             etree.QName(XHTML_NAMESPACE, "Signature")))
         signature.text = self.get_hashed_signature(url=url)
 
         return concierge_request_header
 
-    def runSQL(self, query, start_record=0, limit_to=400):
+    def execute_object_query(self, object_query, start_record=0,
+                             limit_to=400):
         concierge_request_header = self.construct_concierge_header(
             url="http://membersuite.com/contracts/"
                 "IConciergeAPIService/ExecuteMSQL")
         result = self.client.service.ExecuteMSQL(
             _soapheaders=[concierge_request_header],
-            msqlStatement=query,
+            msqlStatement=object_query,
             startRecord=start_record,
             maximumNumberOfRecordsToReturn=limit_to,
         )

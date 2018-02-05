@@ -1,6 +1,6 @@
 import os
 
-from .exceptions import ExecuteMSQLError
+from .exceptions import ExecuteMSQLError, NoResultsError
 
 
 def convert_ms_object(ms_object):
@@ -54,8 +54,9 @@ def get_new_client(request_session=False):
     return client
 
 
-def submit_msql_query(query, client=None):
-    """Submit `query` to MemberSuite, returning .models.MemberSuiteObjects.
+def submit_msql_object_query(object_query, client=None):
+    """Submit `object_query` to MemberSuite, returning
+    .models.MemberSuiteObjects.
 
     So this is a converter from MSQL to .models.MemberSuiteObjects.
 
@@ -66,13 +67,15 @@ def submit_msql_query(query, client=None):
     if not client.session_id:
         client.request_session()
 
-    result = client.runSQL(query)
+    result = client.execute_object_query(object_query)
     execute_msql_result = result["body"]["ExecuteMSQLResult"]
 
     membersuite_object_list = []
 
     if execute_msql_result["Success"]:
+
         result_value = execute_msql_result["ResultValue"]
+
         if result_value["ObjectSearchResult"]["Objects"]:
             # Multiple results.
             membersuite_object_list = []
@@ -87,9 +90,10 @@ def submit_msql_query(query, client=None):
             membersuite_object_list.append(membersuite_object)
         elif (result_value["ObjectSearchResult"]["Objects"] is None and
               result_value["SingleObject"]["ClassType"] is None):
-            # No results, I guess.
-            pass
+            raise NoResultsError(result=execute_msql_result)
+
         return membersuite_object_list
+
     else:
         # @TODO Fix - exposing only the first of possibly many errors here.
         raise ExecuteMSQLError(result=execute_msql_result)

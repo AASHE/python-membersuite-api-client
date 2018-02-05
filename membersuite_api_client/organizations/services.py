@@ -84,8 +84,8 @@ class OrganizationService(ChunkQueryMixin, object):
         if not self.client.session_id:
             self.client.request_session()
 
-        query = "SELECT Objects() FROM OrganizationType"
-        result = self.client.runSQL(query=query)
+        object_query = "SELECT Objects() FROM OrganizationType"
+        result = self.client.execute_object_query(object_query=object_query)
         msql_result = result['body']["ExecuteMSQLResult"]
         return self.package_org_types(msql_result["ResultValue"]
                                       ["ObjectSearchResult"]
@@ -115,11 +115,11 @@ class OrganizationService(ChunkQueryMixin, object):
         if not self.client.session_id:
             self.client.request_session()
 
-        query = ("SELECT Objects() FROM Individual WHERE "
-                 "PrimaryOrganization = '{}'".format(
-                     organization.membersuite_account_num))
+        object_query = ("SELECT Objects() FROM Individual WHERE "
+                        "PrimaryOrganization = '{}'".format(
+                            organization.membersuite_account_num))
 
-        result = self.client.runSQL(query)
+        result = self.client.execute_object_query(object_query)
 
         msql_result = result["body"]["ExecuteMSQLResult"]
 

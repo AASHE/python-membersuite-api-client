@@ -11,10 +11,10 @@ def get_product(membersuite_id, client=None):
 
     client = client or get_new_client(request_session=True)
 
-    query = "SELECT Object() FROM PRODUCT WHERE ID = '{}'".format(
+    object_query = "SELECT Object() FROM PRODUCT WHERE ID = '{}'".format(
         membersuite_id)
 
-    result = client.runSQL(query)
+    result = client.execute_object_query(object_query)
 
     msql_result = result["body"]["ExecuteMSQLResult"]
 

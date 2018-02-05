@@ -5,11 +5,9 @@ A python interface to the MemberSuite API
 
 ## Installation
 
-Install as you would any other package. Add to your requirements.txt:
+Install from PyPI.
 
-    https://github.com/AASHE/python-membersuite-api-client/archive/master.zip
-
-(to be updated when this package is added to PyPi)
+    ```pip install membersuite-api-client```
 
 ## MemberSuite Configuration
 
