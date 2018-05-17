@@ -19,15 +19,29 @@ class MembershipService(ChunkQueryMixin, object):
         """
         self.client = client
 
+    def get_current_membership_for_org(self, account_num, verbose=False):
+        """Return a current membership for this org, or, None if
+        there is none.
+        """
+        all_memberships = self.get_memberships_for_org(
+            account_num=account_num,
+            verbose=verbose)
+        # Look for first membership that hasn't expired yet.
+        for membership in all_memberships:
+            if membership.expiration_date > datetime.datetime.now():
+                return membership
+        return None
+
     def get_memberships_for_org(self, account_num, verbose=False):
         """
-        Retrieve all memberships associated with an organization
+        Retrieve all memberships associated with an organization,
+        ordered by expiration date.
         """
         if not self.client.session_id:
             self.client.request_session()
 
         query = "SELECT Objects() FROM Membership " \
-                "WHERE Owner = '%s'" % account_num
+                "WHERE Owner = '%s' ORDER BY ExpirationDate" % account_num
 
         membership_list = self.get_long_query(query, verbose=verbose)
         return membership_list or []

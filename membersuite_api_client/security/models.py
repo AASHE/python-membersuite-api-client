@@ -145,13 +145,12 @@ class Individual(MemberSuiteObject):
         if primary_organization:
             membership_service = membership_services.MembershipService(
                 client=client)
-            try:
-                membership = membership_service.get_memberships_for_org(
-                    account_num=primary_organization.id)[0]
-            except IndexError:
-                return False
-            else:
+            membership = membership_service.get_current_membership_for_org(
+                    account_num=primary_organization.id)
+            if membership:
                 return membership.receives_member_benefits
+            else:
+                return False
         else:  # No primary organization.
             return False
 
