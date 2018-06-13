@@ -144,7 +144,8 @@ class Individual(MemberSuiteObject):
 
         if primary_organization:
 
-            print(primary_organization, primary_organization.membersuite_id)
+            print("****", primary_organization,
+                  primary_organization.membersuite_id, "*****")
 
             membership_service = membership_services.MembershipService(
                 client=client)
@@ -154,9 +155,10 @@ class Individual(MemberSuiteObject):
                 print(membership, membership.id)
                 return membership.receives_member_benefits
             else:
-                print("no membership")
+                print("***** DEBUG - no membership *****")
                 return False
         else:  # No primary organization.
+            print('***** DEBUG - no primary organization *****')
             return False
 
     def get_primary_organization(self, client):
