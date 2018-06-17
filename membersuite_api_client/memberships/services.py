@@ -27,7 +27,7 @@ class MembershipService(ChunkQueryMixin, object):
             self.client.request_session()
 
         query = "SELECT Objects() FROM Membership " \
-                "WHERE Owner = '%s'" % account_num
+                "WHERE Owner = '%s' ORDER BY ExpirationDate" % account_num
 
         membership_list = self.get_long_query(query, verbose=verbose)
         return membership_list or []

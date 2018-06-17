@@ -62,7 +62,6 @@ class PortalUser(MemberSuiteObject):
                     owner=self.owner,
                     session_id=self.session_id))
 
-
     def get_individual(self, client):
         """Return the Individual that owns this PortalUser.
 
@@ -148,7 +147,7 @@ class Individual(MemberSuiteObject):
                 client=client)
             try:
                 membership = membership_service.get_memberships_for_org(
-                    account_num=primary_organization.id)[0]
+                    account_num=primary_organization.id)[-1]
             except IndexError:
                 return False
             else:
