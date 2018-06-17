@@ -26,8 +26,9 @@ class MembershipService(ChunkQueryMixin, object):
         if not self.client.session_id:
             self.client.request_session()
 
-        query = "SELECT Objects() FROM Membership " \
-                "WHERE Owner = '%s'" % account_num
+        query = ("SELECT Objects() FROM Membership "
+                 "WHERE Owner = '%s' "
+                 "ORDER BY ExpirationDate") % account_num
 
         membership_list = self.get_long_query(query, verbose=verbose)
         return membership_list or []

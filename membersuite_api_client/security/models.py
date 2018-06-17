@@ -148,7 +148,7 @@ class Individual(MemberSuiteObject):
                 client=client)
             try:
                 membership = membership_service.get_memberships_for_org(
-                    account_num=primary_organization.id)[0]
+                    account_num=primary_organization.id)[-1]
             except IndexError:
                 return False
             else:
