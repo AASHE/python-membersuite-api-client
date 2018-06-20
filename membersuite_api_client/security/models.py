@@ -143,23 +143,14 @@ class Individual(MemberSuiteObject):
         primary_organization = self.get_primary_organization(client=client)
 
         if primary_organization:
-
-            print("****", primary_organization,
-                  primary_organization.membersuite_id, "*****")
-
             membership_service = membership_services.MembershipService(
                 client=client)
             membership = membership_service.get_current_membership_for_org(
                     account_num=primary_organization.id)
             if membership:
-                print(membership, membership.id)
                 return membership.receives_member_benefits
             else:
-                print("***** DEBUG - no membership *****")
                 return False
-        else:  # No primary organization.
-            print('***** DEBUG - no primary organization *****')
-            return False
 
     def get_primary_organization(self, client):
         """Return the primary Organization for this Individual.
