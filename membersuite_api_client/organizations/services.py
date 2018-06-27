@@ -57,7 +57,7 @@ class OrganizationService(ChunkQueryMixin, object):
         if where_params:
             query += " WHERE "
             query += " AND ".join(
-                ["%s %s %s" % (p[0], p[1], p[2]) for p in where_params])
+                ["%s %s '%s'" % (p[0], p[1], p[2]) for p in where_params])
 
         if verbose:
             print("Fetching Organizations...")
