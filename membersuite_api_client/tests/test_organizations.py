@@ -22,7 +22,7 @@ class OrganizationServiceTestCase(BaseTestCase):
         """
         # Fetch just one org by name
         parameters = {
-            'Name': "'%s'" % TEST_MS_MEMBER_ORG_NAME,
+            'Name': '%s' % TEST_MS_MEMBER_ORG_NAME,
         }
         org_list = self.service.get_orgs(parameters=parameters)
         self.assertEqual(len(org_list), 1)
