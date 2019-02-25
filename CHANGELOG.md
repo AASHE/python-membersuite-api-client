@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Changed
 
+## [1.1.5]
+### Fixed `MembershipService.get_current_membership_for_org()` so it
+doesn't crash when `Subscription.expiration_date` is `None`.
+
 ## [3.3.4] - 2018-02-05
 ### Breaking Changes
 

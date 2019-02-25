@@ -15,7 +15,7 @@ class MembershipService(ChunkQueryMixin, object):
 
     def __init__(self, client):
         """
-        Accepts a ConciergeClient to connect with MemberSuite
+        Requires a ConciergeClient to connect with MemberSuite
         """
         self.client = client
 
@@ -28,8 +28,9 @@ class MembershipService(ChunkQueryMixin, object):
             verbose=verbose)
         # Look for first membership that hasn't expired yet.
         for membership in all_memberships:
-            if membership.expiration_date > datetime.datetime.now():
-                return membership
+            if (membership.expiration_date and
+                membership.expiration_date > datetime.datetime.now()):  # noqa
+                return membership  # noqa
         return None
 
     def get_memberships_for_org(self, account_num, verbose=False):

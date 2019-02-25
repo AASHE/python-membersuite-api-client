@@ -35,9 +35,8 @@ To authenticate and receive a session ID:
 
 To take advantage of a service, for example `subscriptions`:
 
-    ORG_ID = #####
     service = SubscriptionService(self.client)
-    subscription_list = service.get_subscriptions(org_id=ORG_ID)
+    subscription_list = service.get_subscriptions(org_id=1)
 
 ## Running tests
 
