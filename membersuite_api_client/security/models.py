@@ -151,6 +151,8 @@ class Individual(MemberSuiteObject):
                 return membership.receives_member_benefits
             else:
                 return False
+        else:
+            return False
 
     def get_primary_organization(self, client):
         """Return the primary Organization for this Individual.
