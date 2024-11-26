@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import PortalUser, generate_username
 from ..exceptions import LoginToPortalError, LogoutError
+from ..mixins import ChunkQueryMixin
 from ..utils import get_session_id
 
 
@@ -122,3 +123,28 @@ def get_user_for_membersuite_entity(membersuite_entity):
         user_created = True
 
     return user, user_created
+
+class UserService(ChunkQueryMixin, object):
+
+    def __init__(self, client):
+        """
+        Requires a ConciergeClient to connect with MemberSuite
+        """
+        self.client = client
+
+
+    def get_all_users(self, limit_to=100, max_calls=None, parameters=None,
+                since_when=None, start_record=0, verbose=False):
+        """
+        Retrieve all users
+        """
+        if not self.client.session_id:
+            self.client.request_session()
+
+        query = "SELECT Objects() FROM Individual"
+
+        user_list = self.get_long_query(
+            query, limit_to=limit_to, max_calls=max_calls,
+            start_record=start_record, verbose=verbose)
+
+        return user_list or []
