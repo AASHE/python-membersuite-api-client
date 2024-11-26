@@ -2,10 +2,10 @@ import time
 
 from django.contrib.auth.models import User
 
-from .models import PortalUser, generate_username
+from .models import Individual, PortalUser, generate_username
 from ..exceptions import LoginToPortalError, LogoutError
 from ..mixins import ChunkQueryMixin
-from ..utils import get_session_id
+from ..utils import get_session_id, convert_ms_object
 
 
 def login_to_portal(username, password, client, retries=2, delay=0):
@@ -148,3 +148,9 @@ class UserService(ChunkQueryMixin, object):
             start_record=start_record, verbose=verbose)
 
         return user_list or []
+
+    def ms_object_to_model(self, ms_obj):
+        " Converts an individual result to a Subscription Model "
+        sane_obj = convert_ms_object(
+            ms_obj['Fields']['KeyValueOfstringanyType'])
+        return Individual(sane_obj)
